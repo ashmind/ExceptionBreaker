@@ -14,6 +14,12 @@ namespace BreakOnExceptionsPlus.Implementation {
           | enum_EXCEPTION_STATE.EXCEPTION_STOP_USER_FIRST_CHANCE
           | enum_EXCEPTION_STATE.EXCEPTION_STOP_USER_UNCAUGHT;
 
+        // I honestly do not understand this one yet.
+        // However it is equivalent to what Debug->Exceptions window does.
+        private const enum_EXCEPTION_STATE VSExceptionStateStopNotSet =
+            enum_EXCEPTION_STATE.EXCEPTION_STOP_SECOND_CHANCE
+          | enum_EXCEPTION_STATE.EXCEPTION_JUST_MY_CODE_SUPPORTED;
+
         public event EventHandler CurrentStateChanged = delegate { };
 
         private readonly DebugSessionWatcher watcher;
@@ -53,7 +59,7 @@ namespace BreakOnExceptionsPlus.Implementation {
 
             exceptionCache = this.GetManagedExceptions(session);
             var state = this.CurrentState;
-            if (state == ExceptionBreakState.BreakOnAll || state == ExceptionBreakState.BreakOnNone) {
+            if (state == ExceptionBreakState.BreakOnAll) {
                 this.ApplyCurrentState(session);
             }
             else {
@@ -112,25 +118,20 @@ namespace BreakOnExceptionsPlus.Implementation {
         
         private void ApplyCurrentState(IDebugSession2 session) {
             this.logger.WriteLine("Applying CurrentState: {0}.", this.CurrentState);
-            if (this.CurrentState == ExceptionBreakState.BreakOnAll) {
-                foreach (var exception in this.exceptionCache) {
-                    var updated = new EXCEPTION_INFO {
-                        guidType = exception.guidType,
-                        bstrExceptionName = exception.bstrExceptionName,
-                        dwState = (uint)VSExceptionStateStopAll
-                    };
+            var newExceptionState = (this.CurrentState == ExceptionBreakState.BreakOnAll)
+                                  ? (uint)VSExceptionStateStopAll
+                                  : (uint)VSExceptionStateStopNotSet;
 
-                    var hr = session.SetException(new[] { updated });
-                    if (hr != VSConstants.S_OK)
-                        Marshal.ThrowExceptionForHR(hr);
-                }
-            }
-            else {
-                foreach (var exception in this.exceptionCache) {
-                    var hr = session.RemoveSetException(new[] { exception });
-                    if (hr != VSConstants.S_OK)
-                        Marshal.ThrowExceptionForHR(hr);
-                }
+            foreach (var exception in this.exceptionCache) {
+                var updated = new EXCEPTION_INFO {
+                    guidType = exception.guidType,
+                    bstrExceptionName = exception.bstrExceptionName,
+                    dwState = newExceptionState
+                };
+
+                var hr = session.SetException(new[] { updated });
+                if (hr != VSConstants.S_OK)
+                    Marshal.ThrowExceptionForHR(hr);
             }
         }
     }
