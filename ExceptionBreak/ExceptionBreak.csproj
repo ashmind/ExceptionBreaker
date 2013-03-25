@@ -151,12 +151,11 @@
   <ItemGroup>
     <VSCTCompile Include="ExceptionBreak.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
+      <SubType>Designer</SubType>
     </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Images_32bit.bmp" />
-  </ItemGroup>
-  <ItemGroup>
+    <Resource Include="Resources\Commands.VS2010.png" />
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup />

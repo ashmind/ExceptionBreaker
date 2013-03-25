@@ -17,10 +17,6 @@
       <Group guid="guidCommandSet" id="ToolbarGroup" priority="0x0600">
         <Parent guid="guidVSDebugGroup" id="IDM_DEBUG_TOOLBAR"/>
       </Group>
-
-      <Group guid="guidCommandSet" id="MenuGroup" priority="0x0600">
-        <Parent guid="guidVSDebugGroup" id="IDM_DEBUG_MENU"/>
-      </Group>
     </Groups>
     
     <Buttons>
@@ -33,12 +29,15 @@
           If you do not want an image next to your command, remove the Icon node or set it to <Icon guid="guidOfficeIcon" id="msotcidNoIcon" /> -->
 
       <Button guid="guidCommandSet" id="cmdidBreakOnAll" priority="0x0100" type="Button">
+        <Icon guid="guidCommandImages" id="imgBreakOnAll" />
+        <CommandFlag>IconAndText</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <CommandName>cmdidBreakOnAll</CommandName>
-          <ButtonText>Break on: CLR Exceptions</ButtonText>
-          <MenuText>Break on All CLR Exceptions</MenuText>
           <LocCanonicalName>Exceptions.ToggleBreakOnAll.CLR</LocCanonicalName>
+          <MenuText>Break on All CLR Exceptions</MenuText>
+          <ButtonText>CLR</ButtonText>
+          <ToolTipText>Break on all Common Language Runtime exceptions.</ToolTipText>
         </Strings>
       </Button>
     </Buttons>
@@ -50,7 +49,7 @@
             bitmap strip containing the bitmaps and then there are the numeric ids of the elements used 
             inside a button definition. An important aspect of this declaration is that the element id 
             must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
-      <Bitmap guid="guidImages" href="Resources\Images_32bit.bmp" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows"/>
+      <Bitmap guid="guidCommandImages" href="Resources\Commands.VS2010.png" usedList="imgBreakOnAll" />
     </Bitmaps>
   </Commands>
 
@@ -78,18 +77,13 @@
     <!-- This is the guid used to group the menu commands together -->
     <GuidSymbol name="guidCommandSet" value="{9d55da8f-2be1-44dc-a94a-08154f98f634}">
 
-    <IDSymbol name="ToolbarGroup" value="0x1020" />
-    <IDSymbol name="MenuGroup" value="0x1050" />
-    <IDSymbol name="cmdidBreakOnAll" value="0x0100" />
-  </GuidSymbol>
+      <IDSymbol name="ToolbarGroup" value="0x1020" />
+      <IDSymbol name="cmdidBreakOnAll" value="0x0100" />
+    </GuidSymbol>
     
-  <GuidSymbol name="guidImages" value="{9fb31921-961d-4621-83ac-dafd6b19185d}" >
-    <IDSymbol name="bmpPic1" value="1" />
-    <IDSymbol name="bmpPic2" value="2" />
-    <IDSymbol name="bmpPicSearch" value="3" />
-    <IDSymbol name="bmpPicX" value="4" />
-    <IDSymbol name="bmpPicArrows" value="5" />
-  </GuidSymbol>
+    <GuidSymbol name="guidCommandImages" value="{459584a6-be3c-4039-8a84-17a914ee70da}">
+      <IDSymbol name="imgBreakOnAll" value="1" />
+    </GuidSymbol>
   </Symbols>
 
 </CommandTable>
