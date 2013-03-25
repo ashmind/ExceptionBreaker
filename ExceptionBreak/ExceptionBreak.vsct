@@ -1,19 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-
-  <!--  This is the file that defines the actual layout and type of the commands.
-        It is divided in different sections (e.g. command definition, command
-        placement, ...), with each defining a specific set of properties.
-        See the comment before each section for more details about how to
-        use it. -->
-
-  <!--  The VSCT compiler (the tool that translates this file into the binary 
-        format that VisualStudio will consume) has the ability to run a preprocessor 
-        on the vsct file; this preprocessor is (usually) the C++ preprocessor, so 
-        it is possible to define includes and macros with the same syntax used 
-        in C++ files. Using this ability of the compiler here, we include some files 
-        defining some of the constants that we will use inside the file. -->
-
   <!--This is the file that defines the IDs for all the commands exposed by VisualStudio. -->
   <Extern href="stdidcmd.h"/>
 
@@ -22,45 +8,21 @@
 
   <!--Definition of some VSCT specific constants. In this sample we use it for the IDs inside the guidOfficeIcon group. -->
   <Extern href="msobtnid.h"/>
+  
+  <Extern href="vsdbgcmd.h"/>
+  <Extern href="vsdebugguids.h"/>
 
-
-
-
-  <!--The Commands section is where we the commands, menus and menu groups are defined.
-      This section uses a Guid to identify the package that provides the command defined inside it. -->
   <Commands package="guidPackage">
-    <Menus>
-      <Menu guid="guidCommandSet" id="Toolbar" type="Toolbar">
-        <CommandFlag>DefaultDocked</CommandFlag>
-        <Strings>
-          <ButtonText>Break On Exceptions Plus</ButtonText>
-          <CommandName>Break On Exceptions Plus</CommandName>
-        </Strings>
-      </Menu>
-    </Menus>
-    
-    <!-- Inside this section we have different sub-sections: one for the menus, another  
-    for the menu groups, one for the buttons (the actual commands), one for the combos 
-    and the last one for the bitmaps used. Each element is identified by a command id that  
-    is a unique pair of guid and numeric identifier; the guid part of the identifier is usually  
-    called "command set" and is used to group different command inside a logically related  
-    group; your package should define its own command set in order to avoid collisions  
-    with command ids defined by other packages. -->
-
-    
-    <!-- In this section you can define new menu groups. A menu group is a container for 
-         other menus or buttons (commands); from a visual point of view you can see the 
-         group as the part of a menu contained between two lines. The parent of a group 
-         must be a menu. -->
     <Groups>
       <Group guid="guidCommandSet" id="ToolbarGroup" priority="0x0600">
-        <Parent guid="guidCommandSet" id="Toolbar"/>
+        <Parent guid="guidVSDebugGroup" id="IDM_DEBUG_TOOLBAR"/>
+      </Group>
+
+      <Group guid="guidCommandSet" id="MenuGroup" priority="0x0600">
+        <Parent guid="guidVSDebugGroup" id="IDM_DEBUG_MENU"/>
       </Group>
     </Groups>
     
-    <!--Buttons section. -->
-    <!--This section defines the elements the user can interact with, like a menu command or a button 
-        or combo box in a toolbar. -->
     <Buttons>
       <!--To define a menu group you have to specify its ID, the parent menu and its display priority. 
           The command is visible and enabled by default. If you need to change the visibility, status, etc, you can use
@@ -70,11 +32,13 @@
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node or set it to <Icon guid="guidOfficeIcon" id="msotcidNoIcon" /> -->
 
-      <Button guid="guidCommandSet" id="cmdidBreakOn" priority="0x0100" type="Button">
-        <Parent guid="guidCommandSet" id="ToolbarGroup" />
+      <Button guid="guidCommandSet" id="cmdidBreakOnAll" priority="0x0100" type="Button">
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
-          <CommandName>cmdidBreakOn</CommandName>
+          <CommandName>cmdidBreakOnAll</CommandName>
           <ButtonText>Break on: CLR Exceptions</ButtonText>
+          <MenuText>Break on All CLR Exceptions</MenuText>
+          <LocCanonicalName>Exceptions.ToggleBreakOnAll.CLR</LocCanonicalName>
         </Strings>
       </Button>
     </Buttons>
@@ -87,15 +51,26 @@
             inside a button definition. An important aspect of this declaration is that the element id 
             must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
       <Bitmap guid="guidImages" href="Resources\Images_32bit.bmp" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows"/>
-
     </Bitmaps>
- 
   </Commands>
 
+  <CommandPlacements>
+    <CommandPlacement guid="guidCommandSet" id="cmdidBreakOnAll" priority="0x1">
+      <Parent guid="guidCommandSet" id="ToolbarGroup" />
+    </CommandPlacement>
 
+    <CommandPlacement guid="guidCommandSet" id="cmdidBreakOnAll" priority="0x0F01">
+      <Parent guid="guidVSDebugGroup" id="IDG_EXECUTION" />
+    </CommandPlacement>
+  </CommandPlacements>
 
-
-
+  <KeyBindings>
+    <KeyBinding mod1="Control" key1="E"
+                mod2="Control" key2="B"
+                guid="guidCommandSet" id="cmdidBreakOnAll"
+                editor="guidVSStd97" />
+  </KeyBindings>
+  
   <Symbols>
     <!-- This is the package guid. -->
     <GuidSymbol name="guidPackage" value="{a83e8a33-e775-4a79-be41-efe20007eebd}" />
@@ -103,9 +78,9 @@
     <!-- This is the guid used to group the menu commands together -->
     <GuidSymbol name="guidCommandSet" value="{9d55da8f-2be1-44dc-a94a-08154f98f634}">
 
-    <IDSymbol name="Toolbar" value="0x1000" />
     <IDSymbol name="ToolbarGroup" value="0x1020" />
-    <IDSymbol name="cmdidBreakOn" value="0x0100" />
+    <IDSymbol name="MenuGroup" value="0x1050" />
+    <IDSymbol name="cmdidBreakOnAll" value="0x0100" />
   </GuidSymbol>
     
   <GuidSymbol name="guidImages" value="{9fb31921-961d-4621-83ac-dafd6b19185d}" >

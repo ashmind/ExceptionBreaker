@@ -55,8 +55,8 @@ namespace ExceptionBreak
             Trace.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this));
             base.Initialize();
 
-            var outputPane = this.GetOutputPane(GuidList.OutputPane, "Extension: BreakOnExceptionsPlus (Diagnostic)");
-            this.logger = new DiagnosticLogger(outputPane, "BreakOnExceptionsPlus");
+            var outputPane = this.GetOutputPane(GuidList.OutputPane, "Ext: ExceptionBreak (Diagnostic)");
+            this.logger = new DiagnosticLogger(outputPane, "ExceptionBreak");
 
             var debugger = (IVsDebugger)GetGlobalService(typeof(SVsShellDebugger));
             var watcher = new DebugSessionWatcher(debugger, this.logger);

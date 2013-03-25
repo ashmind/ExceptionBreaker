@@ -13,6 +13,7 @@ namespace ExceptionBreak.Implementation {
             this.breakManager = breakManager;
             this.logger = logger;
             this.breakOnAllCommand = initBreakOnAllCommand(breakOnAllCommand_Callback);
+            this.breakOnAllCommand.Enabled = true;
 
             this.breakManager.CurrentStateChanged += breakManager_CurrentStateChanged;
         }

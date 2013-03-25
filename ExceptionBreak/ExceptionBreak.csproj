@@ -157,7 +157,6 @@
     <None Include="Resources\Images_32bit.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="OtherApproaches.txt" />
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup />
