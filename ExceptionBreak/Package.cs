@@ -3,11 +3,11 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
-using BreakOnExceptionsPlus.Implementation;
+using ExceptionBreak.Implementation;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
 
-namespace BreakOnExceptionsPlus
+namespace ExceptionBreak
 {
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
@@ -29,7 +29,7 @@ namespace BreakOnExceptionsPlus
     [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(GuidList.PackageString)]
-    public sealed class BreakOnExceptionsPlusPackage : Package
+    public sealed class Package : Microsoft.VisualStudio.Shell.Package
     {
         private Controller controller;
         private IDiagnosticLogger logger;
@@ -41,7 +41,7 @@ namespace BreakOnExceptionsPlus
         /// not sited yet inside Visual Studio environment. The place to do all the other 
         /// initialization is the Initialize method.
         /// </summary>
-        public BreakOnExceptionsPlusPackage()
+        public Package()
         {
             Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this));
         }

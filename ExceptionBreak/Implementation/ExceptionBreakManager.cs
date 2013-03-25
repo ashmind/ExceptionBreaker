@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 
-namespace BreakOnExceptionsPlus.Implementation {
+namespace ExceptionBreak.Implementation {
     public class ExceptionBreakManager {
         private const enum_EXCEPTION_STATE VSExceptionStateStopAll =
             enum_EXCEPTION_STATE.EXCEPTION_STOP_FIRST_CHANCE

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
 
-namespace BreakOnExceptionsPlus.Implementation {
+namespace ExceptionBreak.Implementation {
     public class Controller {
         private readonly MenuCommand breakOnAllCommand;
         private readonly ExceptionBreakManager breakManager;

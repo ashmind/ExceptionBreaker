@@ -6,7 +6,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace BreakOnExceptionsPlus.Implementation {
+namespace ExceptionBreak.Implementation {
     public class DebugSessionWatcher : IDebugEventCallback2, IDisposable {
         public event EventHandler DebugSessionChanged = delegate {};
 

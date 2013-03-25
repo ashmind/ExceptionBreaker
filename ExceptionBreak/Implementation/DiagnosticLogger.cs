@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace BreakOnExceptionsPlus.Implementation {
+namespace ExceptionBreak.Implementation {
     /// <summary>
     /// Logs same information to Trace of the debugging VS and Output window for the target VS.
     /// </summary>

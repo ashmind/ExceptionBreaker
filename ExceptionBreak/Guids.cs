@@ -3,7 +3,7 @@
 
 using System;
 
-namespace BreakOnExceptionsPlus
+namespace ExceptionBreak
 {
     internal static class GuidList
     {
