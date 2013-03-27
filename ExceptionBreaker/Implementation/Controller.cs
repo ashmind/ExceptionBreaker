@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using EnvDTE;
 using Microsoft.VisualStudio;
 
-namespace ExceptionBreak.Implementation {
+namespace ExceptionBreaker.Implementation {
     public class Controller {
         private readonly MenuCommand breakOnAllCommand;
         private readonly ExceptionBreakManager breakManager;
@@ -47,7 +47,7 @@ namespace ExceptionBreak.Implementation {
             }
             catch (Exception ex) {
                 this.logger.WriteLine("Unexpected exception: " + ex);
-                MessageBox.Show(ex.Message, "Error in ExceptionBreak extension", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Error in ExceptionBreaker extension", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

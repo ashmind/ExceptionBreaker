@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Vsix xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2010">
   <Identifier Id="a83e8a33-e775-4a79-be41-efe20007eebd">
-    <Name>Exception Break</Name>
+    <Name>Exception Breaker</Name>
     <Author>Andrey Shchekin</Author>
     <Version>0.7</Version>
     <Description xml:space="preserve">Simplifies "Break On Exception" UI.</Description>

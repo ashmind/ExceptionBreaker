@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ExceptionBreak.Implementation {
+namespace ExceptionBreaker.Implementation {
     public enum ExceptionBreakState {
         Unknown,
         Inconclusive,

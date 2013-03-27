@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExceptionBreak", "ExceptionBreak\ExceptionBreak.csproj", "{17A398C8-EF46-413B-A564-A70104EFBB64}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExceptionBreaker", "ExceptionBreaker\ExceptionBreaker.csproj", "{17A398C8-EF46-413B-A564-A70104EFBB64}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

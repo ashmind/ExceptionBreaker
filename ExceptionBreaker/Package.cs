@@ -4,11 +4,11 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
 using EnvDTE;
-using ExceptionBreak.Implementation;
+using ExceptionBreaker.Implementation;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
 
-namespace ExceptionBreak
+namespace ExceptionBreaker
 {
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
@@ -57,8 +57,8 @@ namespace ExceptionBreak
             Trace.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this));
             base.Initialize();
 
-            var outputPane = this.GetOutputPane(GuidList.OutputPane, "Ext: ExceptionBreak (Diagnostic)");
-            this.logger = new DiagnosticLogger(outputPane, "ExceptionBreak");
+            var outputPane = this.GetOutputPane(GuidList.OutputPane, "Ext: ExceptionBreaker (Diagnostic)");
+            this.logger = new DiagnosticLogger(outputPane, "ExceptionBreaker");
 
             var debugger = (IVsDebugger)GetGlobalService(typeof(SVsShellDebugger));
             var watcher = new DebugSessionWatcher(debugger, this.logger);

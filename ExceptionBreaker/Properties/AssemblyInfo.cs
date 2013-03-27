@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ExceptionBreak")]
+[assembly: AssemblyTitle("ExceptionBreaker")]
 [assembly: AssemblyCompany("Andrey Shchekin")]
-[assembly: AssemblyProduct("ExceptionBreak")]
+[assembly: AssemblyProduct("ExceptionBreaker")]
 [assembly: AssemblyCopyright("(c) 2013 Andrey Shchekin")]
 [assembly: ComVisible(false)]     
 [assembly: CLSCompliant(false)]
