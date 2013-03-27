@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace ExceptionBreak.Implementation {
     public class Controller {
@@ -28,6 +29,7 @@ namespace ExceptionBreak.Implementation {
             }
             catch (Exception ex) {
                 this.logger.WriteLine("Unexpected exception: " + ex);
+                MessageBox.Show(ex.Message, "Error in ExceptionBreak extension", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

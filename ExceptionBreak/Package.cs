@@ -27,6 +27,7 @@ namespace ExceptionBreak
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
+    [ProvideAutoLoad(UIContextGuids80.Debugging)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(GuidList.PackageString)]
     public sealed class Package : Microsoft.VisualStudio.Shell.Package
