@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
+using EnvDTE;
 using ExceptionBreak.Implementation;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -73,7 +74,8 @@ namespace ExceptionBreak
                 return command;
             };
 
-            this.controller = new Controller(initBreakOnAllCommand, manager, logger);
+            var dte = (DTE)this.GetService(typeof(DTE));
+            this.controller = new Controller(dte, initBreakOnAllCommand, manager, logger);
         }
     }
 }

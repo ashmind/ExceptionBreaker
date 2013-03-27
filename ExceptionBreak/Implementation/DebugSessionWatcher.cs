@@ -57,8 +57,6 @@ namespace ExceptionBreak.Implementation {
         }
 
         int IDebugEventCallback2.Event(IDebugEngine2 pEngine, IDebugProcess2 pProcess, IDebugProgram2 pProgram, IDebugThread2 pThread, IDebugEvent2 pEvent, ref Guid riidEvent, uint dwAttrib) {
-            this.logger.WriteLine("Debug event: pEngine = {0}, pProcess = {1}, pProgram = {2}, pThread = {3}, pEvent = {4}, riidEvent = {5}, dwAttrib = {6}",
-                                  pEngine, pProcess, pProgram, pThread, pEvent, riidEvent, dwAttrib);
             try {
                 if (riidEvent == typeof(IDebugSessionCreateEvent2).GUID)
                     return this.ProcessSessionCreateOrAttachEvent((IDebugSessionEvent2)pEvent, "created");
@@ -80,7 +78,15 @@ namespace ExceptionBreak.Implementation {
             if (comObject == null)
                 return "null";
 
-            return Marshal.GetIUnknownForObject(comObject).ToString();
+            var punk = IntPtr.Zero;
+            try {
+                punk = Marshal.GetIUnknownForObject(comObject);
+                return punk.ToString();
+            }
+            finally {
+                if (punk != IntPtr.Zero)
+                    Marshal.Release(punk);
+            }
         }
 
         public void Dispose() {
