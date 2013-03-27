@@ -56,20 +56,6 @@ namespace ExceptionBreak.Implementation {
             return VSConstants.S_OK;
         }
 
-        //private int ProcessProgramCreateEvent(IDebugProgram2 program) {
-        //    this.logger.WriteLine("Event: Debug program {0} ({1}) created.", this.GetProgramName(program), this.ToComPtrString(program));
-        //    this.DebugPrograms.Add(program);
-        //    this.logger.WriteLine("DebugPrograms: Count = {0}.", this.DebugPrograms.Count);
-        //    return VSConstants.S_OK;
-        //}
-
-        //private int ProcessProgramDestroyEvent(IDebugProgram2 program) {
-        //    this.logger.WriteLine("Event: Debug program {0} ({1}) destroyed.", this.GetProgramName(program), this.ToComPtrString(program));
-        //    this.DebugPrograms.Remove(program);
-        //    this.logger.WriteLine("DebugPrograms: Count = {0}.", this.DebugPrograms.Count);
-        //    return VSConstants.S_OK;
-        //}
-
         int IDebugEventCallback2.Event(IDebugEngine2 pEngine, IDebugProcess2 pProcess, IDebugProgram2 pProgram, IDebugThread2 pThread, IDebugEvent2 pEvent, ref Guid riidEvent, uint dwAttrib) {
             this.logger.WriteLine("Debug event: pEngine = {0}, pProcess = {1}, pProgram = {2}, pThread = {3}, pEvent = {4}, riidEvent = {5}, dwAttrib = {6}",
                                   pEngine, pProcess, pProgram, pThread, pEvent, riidEvent, dwAttrib);
@@ -82,12 +68,6 @@ namespace ExceptionBreak.Implementation {
 
                 if (riidEvent == typeof(IDebugSessionDestroyEvent2).GUID)
                     return this.ProcessSessionDestroyEvent();
-
-                //if (riidEvent == typeof(IDebugProgramCreateEvent2).GUID)
-                //    return this.ProcessProgramCreateEvent(pProgram);
-
-                //if (riidEvent == typeof(IDebugProgramDestroyEvent2).GUID)
-                //    return this.ProcessProgramDestroyEvent(pProgram);
             }
             catch (Exception ex) {
                 this.logger.WriteLine("Unexpected exception: " + ex);
@@ -95,25 +75,6 @@ namespace ExceptionBreak.Implementation {
 
             return VSConstants.S_OK;
         }
-
-        //private string GetProgramName(IDebugProgram2 program) {
-        //    IDebugProcess2 process;
-        //    var hr = program.GetProcess(out process);
-        //    if (hr != VSConstants.S_OK)
-        //        Marshal.ThrowExceptionForHR(hr);
-
-        //    string processName;
-        //    hr = process.GetName((uint)enum_GETNAME_TYPE.GN_NAME, out processName);
-        //    if (hr != VSConstants.S_OK)
-        //        Marshal.ThrowExceptionForHR(hr);
-
-        //    string programName;
-        //    hr = program.GetName(out programName);
-        //    if (hr != VSConstants.S_OK)
-        //        Marshal.ThrowExceptionForHR(hr);
-
-        //    return "'" + processName + "' (" + programName + ")";
-        //}
 
         private string ToComPtrString(object comObject) {
             if (comObject == null)
