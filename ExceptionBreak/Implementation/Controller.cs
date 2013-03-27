@@ -14,7 +14,7 @@ namespace ExceptionBreak.Implementation {
             this.breakManager = breakManager;
             this.logger = logger;
             this.breakOnAllCommand = initBreakOnAllCommand(breakOnAllCommand_Callback);
-            this.breakOnAllCommand.Enabled = true;
+            
 
             this.breakManager.CurrentStateChanged += breakManager_CurrentStateChanged;
         }
@@ -34,7 +34,13 @@ namespace ExceptionBreak.Implementation {
         }
 
         private void breakManager_CurrentStateChanged(object sender, EventArgs eventArgs) {
-            this.breakOnAllCommand.Checked = (this.breakManager.CurrentState == ExceptionBreakState.BreakOnAll);
+            var enabledVisible = (this.breakManager.CurrentState != ExceptionBreakState.Unknown);
+            var @checked = (this.breakManager.CurrentState == ExceptionBreakState.BreakOnAll);
+
+            var command = this.breakOnAllCommand;
+            command.Enabled = enabledVisible;
+            command.Visible = enabledVisible;
+            command.Checked = @checked;
         }
     }
 }

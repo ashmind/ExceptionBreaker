@@ -30,14 +30,15 @@
 
       <Button guid="guidCommandSet" id="cmdidBreakOnAll" priority="0x0100" type="Button">
         <Icon guid="guidCommandImages" id="imgBreakOnAll" />
-        <CommandFlag>IconAndText</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <CommandName>cmdidBreakOnAll</CommandName>
           <LocCanonicalName>Exceptions.ToggleBreakOnAll.CLR</LocCanonicalName>
           <MenuText>Break on All CLR Exceptions</MenuText>
-          <ButtonText>CLR</ButtonText>
-          <ToolTipText>Break on all Common Language Runtime exceptions.</ToolTipText>
+          <ButtonText>Break on All CLR Exceptions</ButtonText>
+          <ToolTipText>Break on all CLR exceptions.</ToolTipText>
         </Strings>
       </Button>
     </Buttons>
