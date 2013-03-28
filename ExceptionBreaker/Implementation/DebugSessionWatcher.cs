@@ -24,6 +24,9 @@ namespace ExceptionBreaker.Implementation {
                 Marshal.ThrowExceptionForHR(hr);
         }
 
+        // accessing this during DebugSessionChanged might or might not be a race condition
+        // (depending on how many threads are there, sending IDebugSessionCreateEvent2 events)
+        // I am not looking into this question for now: you are welcome to improve it if needed
         public IDebugSession2 DebugSession {
             get { return this.debugSession; }
             private set {
@@ -36,7 +39,6 @@ namespace ExceptionBreaker.Implementation {
                 this.logger.WriteLine("DebugSession: Changed to {0}.", this.ToComPtrString(value));
             }
         }
-        
 
         private int ProcessSessionCreateOrAttachEvent(IDebugSessionEvent2 @event, string logSessionAs) {
             IDebugSession2 session;

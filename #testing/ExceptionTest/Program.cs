@@ -10,13 +10,7 @@ namespace ExceptionTest
             if (args.Length == 0 || args[0] != "noloop")
                 StandaloneExceptionLoop();
 
-            // first chance
-            try {
-                throw new ArgumentException();
-            }
-            catch (Exception ex) {
-                // do nothing
-            }
+            FirstChanceException();
 
             // second chance
             //throw new ArgumentException();
@@ -26,15 +20,21 @@ namespace ExceptionTest
             Console.WriteLine("Press any key to get an exception.");
             while (true) {
                 Console.ReadKey();
-                // first chance
-                try {
-                    throw new ArgumentException();
-                }
-                catch (Exception) {
-                    // do nothing
-                }
-
+                FirstChanceException();
                 Console.WriteLine("  Exception thrown.");
+            }
+        }
+
+        private static void FirstChanceException()
+        {
+            // first chance
+            try
+            {
+                throw new ArgumentException();
+            }
+            catch (Exception)
+            {
+                // do nothing
             }
         }
     }

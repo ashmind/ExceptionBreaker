@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
@@ -17,7 +18,6 @@ namespace ExceptionBreaker.Implementation {
         private const enum_EXCEPTION_STATE VSExceptionStateStopAllInfer =
             enum_EXCEPTION_STATE.EXCEPTION_STOP_FIRST_CHANCE
           | enum_EXCEPTION_STATE.EXCEPTION_STOP_SECOND_CHANCE
-          | enum_EXCEPTION_STATE.EXCEPTION_JUST_MY_CODE_SUPPORTED
           | enum_EXCEPTION_STATE.EXCEPTION_STOP_USER_FIRST_CHANCE;
 
         // I honestly do not understand this one yet.
@@ -149,33 +149,39 @@ namespace ExceptionBreaker.Implementation {
 
         private ExceptionBreakState GetStateFromSession() {
             var inferredState = ExceptionBreakState.Unknown;
+            var exceptionThatCausedChangeFromUnknown = new EXCEPTION_INFO();
+
             foreach (var exception in GetSetManagedExceptions()) {
                 var @break = (((enum_EXCEPTION_STATE)exception.dwState & VSExceptionStateStopAllInfer) == VSExceptionStateStopAllInfer);
                 var stateFromException = @break ? ExceptionBreakState.BreakOnAll : ExceptionBreakState.BreakOnNone;
 
                 if (inferredState == ExceptionBreakState.Unknown) {
                     inferredState = stateFromException;
+                    exceptionThatCausedChangeFromUnknown = exception;
                     continue;
                 }
 
                 if (inferredState != stateFromException) {
-                    var exceptionStateAsEnum = (enum_EXCEPTION_STATE)exception.dwState;
-                    this.logger.WriteLine("Manager, inconclusive state diagnostic:");
-                    this.logger.WriteLine("  Expected state:      {0}.", inferredState);
-                    this.logger.WriteLine("  Exception details:   {0}; {1}.", exception.bstrExceptionName, exceptionStateAsEnum);
-                    this.logger.WriteLine("  Actual state:        {0}.", stateFromException);
+                    this.logger.WriteLine("Manager: inconclusive state diagnostic.");
+                    this.logger.WriteLine("  Previous state:        {0}.", inferredState);
+                    this.logger.WriteLine("  Previous exception:    {0}; {1}.", exceptionThatCausedChangeFromUnknown.bstrExceptionName, (enum_EXCEPTION_STATE)exceptionThatCausedChangeFromUnknown.dwState);
+                    this.logger.WriteLine("  Conflicting state:     {0}.", stateFromException);
+                    this.logger.WriteLine("  Conflicting exception: {0}; {1}.", exception.bstrExceptionName, (enum_EXCEPTION_STATE)exception.dwState);
 
                     inferredState = ExceptionBreakState.Inconclusive;
                     break;
                 }
             }
 
-            this.logger.WriteLine("Manager, inferred state: {0}.", inferredState);
+            this.logger.WriteLine("Manager: inferred state is {0}.", inferredState);
             return inferredState;
         }
 
         private void ApplyStateToSession(ExceptionBreakState state) {
             this.logger.WriteLine("Manager: Applying {0} to debug session.", state);
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             var newExceptionState = (state == ExceptionBreakState.BreakOnAll)
                                   ? (uint)VSExceptionStateStopAll
                                   : (uint)VSExceptionStateStopNotSet;
@@ -185,21 +191,21 @@ namespace ExceptionBreaker.Implementation {
             if (hr != VSConstants.S_OK)
                 Marshal.ThrowExceptionForHR(hr);
 
+            var updated = new EXCEPTION_INFO[1];
             foreach (var exception in this.exceptionCache) {
-                SetException(exception, newExceptionState);
+                updated[0] = new EXCEPTION_INFO {
+                    guidType = exception.guidType,
+                    bstrExceptionName = exception.bstrExceptionName,
+                    dwState = newExceptionState
+                };
+
+                hr = this.Session.SetException(updated);
+                if (hr != VSConstants.S_OK)
+                    Marshal.ThrowExceptionForHR(hr);
             }
-        }
 
-        private void SetException(EXCEPTION_INFO @default, uint dwNewState) {
-            var updated = new EXCEPTION_INFO {
-                guidType = @default.guidType,
-                bstrExceptionName = @default.bstrExceptionName,
-                dwState = dwNewState
-            };
-
-            var hr = this.Session.SetException(new[] { updated });
-            if (hr != VSConstants.S_OK)
-                Marshal.ThrowExceptionForHR(hr);
+            stopwatch.Stop();
+            this.logger.WriteLine("  Finished in {0}ms.", stopwatch.ElapsedMilliseconds);
         }
 
         //private static EXCEPTION_INFO DEBUG_GetException(IDebugSession2 session, EXCEPTION_INFO exception, IDebugProgram2 program = null) {

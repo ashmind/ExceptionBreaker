@@ -118,7 +118,7 @@
     <Compile Include="Guids.cs" />
     <Compile Include="Implementation\DiagnosticLogger.cs" />
     <Compile Include="Implementation\IDiagnosticLogger.cs" />
-    <Compile Include="Implementation\Controller.cs" />
+    <Compile Include="Implementation\CommandController.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

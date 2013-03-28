@@ -33,7 +33,7 @@ namespace ExceptionBreaker
     [Guid(GuidList.PackageString)]
     public sealed class Package : Microsoft.VisualStudio.Shell.Package
     {
-        private Controller controller;
+        private CommandController controller;
         private IDiagnosticLogger logger;
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace ExceptionBreaker
             };
 
             var dte = (DTE)this.GetService(typeof(DTE));
-            this.controller = new Controller(dte, initBreakOnAllCommand, manager, logger);
+            this.controller = new CommandController(dte, initBreakOnAllCommand, manager, watcher, logger);
         }
     }
 }
