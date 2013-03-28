@@ -7,6 +7,9 @@ using EnvDTE;
 using Microsoft.VisualStudio;
 
 namespace ExceptionBreaker.Implementation {
+    /// <summary>
+    /// Handles state (enabled, visible, checked) and click events for the BreakOnAllCommand.
+    /// </summary>
     public class CommandController : IDisposable {
         private readonly MenuCommand breakOnAllCommand;
         private readonly ExceptionBreakManager breakManager;

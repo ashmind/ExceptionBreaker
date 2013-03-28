@@ -6,7 +6,8 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace ExceptionBreaker.Implementation {
     /// <summary>
-    /// Logs same information to Trace of the debugging VS and Output window for the target VS.
+    /// Logs both to Trace of the debugging Visual Studio
+    /// and Output window for the target Visual Studio.
     /// </summary>
     public class DiagnosticLogger : IDiagnosticLogger {
         private readonly IVsOutputWindowPane output;

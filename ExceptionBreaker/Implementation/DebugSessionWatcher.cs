@@ -7,6 +7,9 @@ using Microsoft.VisualStudio.Debugger.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace ExceptionBreaker.Implementation {
+    /// <summary>
+    /// Monitors debug session create/destroy events and maintains session between them.
+    /// </summary>
     public class DebugSessionWatcher : IDebugEventCallback2, IDisposable {
         public event EventHandler DebugSessionChanged = delegate {};
 

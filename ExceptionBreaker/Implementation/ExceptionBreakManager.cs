@@ -7,7 +7,14 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 
 namespace ExceptionBreaker.Implementation {
+    /// <summary>
+    /// Manages current break state and applies state changes to <see cref="IDebugSession2" />.
+    /// </summary>
     public class ExceptionBreakManager {
+        // Note: I did not research any specific differences between JustMyCode=On/Off.
+        // the constants below seem to work well enough, but I would not be surprised if
+        // there is something I have not noticed
+
         private const enum_EXCEPTION_STATE VSExceptionStateStopAll =
             enum_EXCEPTION_STATE.EXCEPTION_STOP_FIRST_CHANCE
           | enum_EXCEPTION_STATE.EXCEPTION_STOP_SECOND_CHANCE
@@ -41,6 +48,7 @@ namespace ExceptionBreaker.Implementation {
             this.watcher.DebugSessionChanged += watcher_DebugSessionChanged;
         }
 
+        // Just for convenience
         private IDebugSession2 Session {
             get { return this.watcher.DebugSession; }
         }
@@ -58,13 +66,12 @@ namespace ExceptionBreaker.Implementation {
                     this.EnsureManagedExceptionCache();
 
                 if (value == ExceptionBreakState.BreakOnAll || value == ExceptionBreakState.BreakOnNone) {
-                    if (this.exceptionCache != null) {
-                        this.ApplyStateToSession(value);
-                    }
-                    else {
+                    if (this.exceptionCache == null) {
                         this.logger.WriteLine("Manager: Cache not available, cannot apply state to session.");
                         return;
                     }
+
+                    this.ApplyStateToSession(value);
                 }
 
                 this.currentState = value;
@@ -74,6 +81,7 @@ namespace ExceptionBreaker.Implementation {
         }
 
         public void RefreshCurrentState() {
+            // not using property here as it would try to re-apply state
             this.currentState = this.GetStateFromSession();
             this.CurrentStateChanged(this, EventArgs.Empty);
         }
@@ -107,6 +115,10 @@ namespace ExceptionBreaker.Implementation {
             this.logger.WriteLine("Exception cache is built: {0} exceptions.", this.exceptionCache.Count);
         }
 
+        /// <summary>
+        /// Gets full list of child exceptions under given <paramref name="parent" />.
+        /// The exceptions will not have a specific state set.
+        /// </summary>
         private EXCEPTION_INFO[] GetDefaultExceptions(EXCEPTION_INFO? parent = null) {
             IEnumDebugExceptionInfo2 enumerator;
             var hr = this.Session.EnumDefaultExceptions(parent != null ? new[] { parent.Value } : null, out enumerator);
@@ -114,6 +126,10 @@ namespace ExceptionBreaker.Implementation {
             return GetExceptionsFromEnumerator(hr, enumerator);
         }
 
+        /// <summary>
+        /// Gets list of all managed exceptions that were *set*. It is hard to understand what exactly 
+        /// *set* means in this context, as it returns non-set exception in certain cases. 
+        /// </summary>
         private EXCEPTION_INFO[] GetSetManagedExceptions() {
             var guid = VSConstants.DebugEnginesGuids.ManagedOnly_guid;
 
@@ -207,30 +223,5 @@ namespace ExceptionBreaker.Implementation {
             stopwatch.Stop();
             this.logger.WriteLine("  Finished in {0}ms.", stopwatch.ElapsedMilliseconds);
         }
-
-        //private static EXCEPTION_INFO DEBUG_GetException(IDebugSession2 session, EXCEPTION_INFO exception, IDebugProgram2 program = null) {
-        //    var guid = VSConstants.DebugEnginesGuids.ManagedOnly_guid;
-        //    IEnumDebugExceptionInfo2 enumerator;
-        //    var hr = session.EnumSetExceptions(program, null, ref guid, out enumerator);
-        //    if (hr != VSConstants.S_OK)
-        //        Marshal.ThrowExceptionForHR(hr);
-
-        //    uint count;
-        //    hr = enumerator.GetCount(out count);
-        //    if (hr != VSConstants.S_OK)
-        //        Marshal.ThrowExceptionForHR(hr);
-
-        //    var buffer = new EXCEPTION_INFO[count];
-        //    var countFetched = 0U;
-        //    hr = enumerator.Next(count, buffer, ref countFetched);
-        //    if (hr != VSConstants.S_OK)
-        //        Marshal.ThrowExceptionForHR(hr);
-
-        //    return buffer.FirstOrDefault(e => e.bstrExceptionName == exception.bstrExceptionName);
-        //}
-
-        //private static string DEBUG_DescribeExceptionState(uint dwState) {
-        //    return ((enum_EXCEPTION_STATE)dwState).ToString();
-        //}
     }
 }
