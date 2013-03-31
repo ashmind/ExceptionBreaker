@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <Include href="ExceptionBreaker.vsct" />
+  
+  <Commands package="guidPackage">   
+    <Bitmaps>
+      <Bitmap guid="guidCommandImages" href="Resources\Commands.VS2010.png" usedList="imgBreakOnAll" />
+    </Bitmaps>
+  </Commands>
+  
+  <Symbols>
+    <GuidSymbol name="guidCommandImages" value="{459584a6-be3c-4039-8a84-17a914ee70da}">
+      <IDSymbol name="imgBreakOnAll" value="1" />
+    </GuidSymbol>
+  </Symbols>
+</CommandTable>

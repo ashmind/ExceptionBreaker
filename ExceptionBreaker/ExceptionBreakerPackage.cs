@@ -26,15 +26,15 @@ namespace ExceptionBreaker
     // This attribute is used to register the information needed to show the this package
     // in the Help/About dialog of Visual Studio.
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
-    // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
     [ProvideAutoLoad(UIContextGuids80.Debugging)]
-    [ProvideMenuResource("Menus.ctmenu", 1)]
+    [ProvideMenuResource("Menus.2012.ctmenu", 1)]
     [Guid(GuidList.PackageString)]
-    public sealed class Package : Microsoft.VisualStudio.Shell.Package
+    public sealed class ExceptionBreakerPackage : Microsoft.VisualStudio.Shell.Package
     {
         private CommandController controller;
         private IDiagnosticLogger logger;
+        private DTE dte;
 
         /// <summary>
         /// Default constructor of the package.
@@ -43,7 +43,7 @@ namespace ExceptionBreaker
         /// not sited yet inside Visual Studio environment. The place to do all the other 
         /// initialization is the Initialize method.
         /// </summary>
-        public Package()
+        public ExceptionBreakerPackage()
         {
             Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this));
         }
@@ -68,13 +68,13 @@ namespace ExceptionBreaker
             var menuCommandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
 
             Func<EventHandler, MenuCommand> initBreakOnAllCommand = callback => {
-                var command = new MenuCommand(callback, CommandIDs.BreakOn);
+                var command = new OleMenuCommand(id: CommandIDs.BreakOn, invokeHandler: callback);
                 menuCommandService.AddCommand(command);
 
                 return command;
             };
 
-            var dte = (DTE)this.GetService(typeof(DTE));
+            this.dte = (DTE)this.GetService(typeof(DTE));
             this.controller = new CommandController(dte, initBreakOnAllCommand, manager, watcher, logger);
         }
     }

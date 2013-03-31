@@ -125,7 +125,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Package.cs" />
+    <Compile Include="ExceptionBreakerPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CommandIDs.cs" />
   </ItemGroup>
@@ -149,13 +149,21 @@
     <None Include="Key.snk" />
   </ItemGroup>
   <ItemGroup>
-    <VSCTCompile Include="ExceptionBreaker.vsct">
-      <ResourceName>Menus.ctmenu</ResourceName>
+    <None Include="ExceptionBreaker.vsct">
       <SubType>Designer</SubType>
-    </VSCTCompile>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Commands.VS2010.png" />
+    <VSCTCompile Include="ExceptionBreaker.2010.vsct">
+      <ResourceName>Menus.2010.ctmenu</ResourceName>
+      <SubType>Designer</SubType>
+    </VSCTCompile>
+    <VSCTCompile Include="ExceptionBreaker.2012.vsct">
+      <ResourceName>Menus.2012.ctmenu</ResourceName>
+      <SubType>Designer</SubType>
+    </VSCTCompile>
+    <Resource Include="Resources\Commands.VS2012.png" />
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup />
