@@ -154,6 +154,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Screenshot.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Resource Include="Resources\Commands.VS2010.png" />
     <VSCTCompile Include="ExceptionBreaker.2010.vsct">
       <ResourceName>Menus.2010.ctmenu</ResourceName>

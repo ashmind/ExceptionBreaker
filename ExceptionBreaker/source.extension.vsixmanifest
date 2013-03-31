@@ -3,9 +3,12 @@
   <Identifier Id="a83e8a33-e775-4a79-be41-efe20007eebd">
     <Name>Exception Breaker</Name>
     <Author>Andrey Shchekin</Author>
-    <Version>0.7</Version>
-    <Description xml:space="preserve">Simplifies "Break On Exception" UI.</Description>
+    <Version>1.0.0</Version>
+    <Description xml:space="preserve">ExceptionBreaker is a VS extension that provides a way to fast-toggle breaking on all CLR exceptions.  
+It is available through both `Debug` toolbar and `Debug` top level menu.</Description>
     <Locale>1033</Locale>
+    <MoreInfoUrl>http://github.com/ashmind/ExceptionBreaker</MoreInfoUrl>
+    <PreviewImage>Screenshot.png</PreviewImage>
     <InstalledByMsi>false</InstalledByMsi>
     <SupportedProducts>
       <VisualStudio Version="10.0">
