@@ -3,7 +3,7 @@
 ExceptionBreaker is a VS extension that provides a way to fast-toggle breaking on all CLR exceptions.  
 It is available through both `Debug` toolbar and `Debug` top level menu.
 
-![](#assets/screenshots/VS2012.Toolbar.png)
+![](%23assets/screenshots/VS2012.Toolbar.png)
 
 ### Installation
 
@@ -14,7 +14,7 @@ Supported VS versions: 2010 and 2012.
 
 Toggling the button toggles all exceptions in `Common Language Runtime Exceptions` group to be selected (or deselected):
 
-<p><img src="#assets/screenshots/Exceptions.Set.png" width="567" height="279" /></p>
+<p><img src="%23assets/screenshots/Exceptions.Set.png" width="567" height="279" /></p>
 
 Notes:  
 
