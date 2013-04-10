@@ -35,22 +35,22 @@ namespace ExceptionBreaker.Implementation {
 
         public event EventHandler CurrentStateChanged = delegate { };
 
-        private readonly DebugSessionWatcher watcher;
+        private readonly DebugSessionManager sessionManager;
         private readonly IDiagnosticLogger logger;
 
         private ICollection<EXCEPTION_INFO> exceptionCache;
         private ExceptionBreakState currentState;
 
-        public ExceptionBreakManager(DebugSessionWatcher watcher, IDiagnosticLogger logger) {
-            this.watcher = watcher;
+        public ExceptionBreakManager(DebugSessionManager sessionManager, IDiagnosticLogger logger) {
+            this.sessionManager = sessionManager;
             this.logger = logger;
 
-            this.watcher.DebugSessionChanged += watcher_DebugSessionChanged;
+            this.sessionManager.DebugSessionChanged += this.sessionManager_DebugSessionChanged;
         }
 
         // Just for convenience
         private IDebugSession2 Session {
-            get { return this.watcher.DebugSession; }
+            get { return this.sessionManager.DebugSession; }
         }
 
         public ExceptionBreakState CurrentState {
@@ -61,7 +61,7 @@ namespace ExceptionBreaker.Implementation {
 
                 this.logger.WriteLine("Manager: CurrentState is being set to {0}.", value);
 
-                var session = this.watcher.DebugSession;
+                var session = this.sessionManager.DebugSession;
                 if (session != null)
                     this.EnsureManagedExceptionCache();
 
@@ -86,7 +86,7 @@ namespace ExceptionBreaker.Implementation {
             this.CurrentStateChanged(this, EventArgs.Empty);
         }
 
-        private void watcher_DebugSessionChanged(object sender, EventArgs e) {
+        private void sessionManager_DebugSessionChanged(object sender, EventArgs e) {
             if (this.Session == null)
                 return;
 

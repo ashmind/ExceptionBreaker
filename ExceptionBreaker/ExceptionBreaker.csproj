@@ -112,13 +112,28 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComImports\BREAKPOINT_EDIT_OPERATION.cs" />
+    <Compile Include="ComImports\BREAKPOINT_FILTER_TYPE.cs" />
+    <Compile Include="ComImports\DEBUGGER_OPTIONS.cs" />
+    <Compile Include="ComImports\DEBUGGER_STRING_OPTIONS.cs" />
+    <Compile Include="ComImports\EBreakpointType.cs" />
+    <Compile Include="ComImports\IBreakpoint.cs" />
+    <Compile Include="ComImports\IBreakpointEvents.cs" />
+    <Compile Include="ComImports\IBreakpointManager.cs" />
+    <Compile Include="ComImports\IDataTipEvents.cs" />
+    <Compile Include="ComImports\IDataTipManager.cs" />
+    <Compile Include="ComImports\IDebuggerInternal.cs" />
+    <Compile Include="ComImports\IDebuggerInternalEvents.cs" />
+    <Compile Include="ComImports\IMAGEINFO_TYPE.cs" />
+    <Compile Include="Implementation\DebugSessionEventSink.cs" />
     <Compile Include="Implementation\ExceptionBreakState.cs" />
     <Compile Include="Implementation\ExceptionBreakManager.cs" />
-    <Compile Include="Implementation\DebugSessionWatcher.cs" />
+    <Compile Include="Implementation\DebugSessionManager.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="Implementation\DiagnosticLogger.cs" />
     <Compile Include="Implementation\IDiagnosticLogger.cs" />
     <Compile Include="Implementation\CommandController.cs" />
+    <Compile Include="ComImports\DataTipIdentity.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -154,6 +169,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="ComImports\ReadMe.txt" />
     <Content Include="Screenshot.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

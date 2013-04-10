@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
 using EnvDTE;
 using ExceptionBreaker.Implementation;
+using Microsoft.VisualStudio.Debugger.Interop.Internal;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
 
@@ -60,9 +61,9 @@ namespace ExceptionBreaker
             var outputPane = this.GetOutputPane(GuidList.OutputPane, "Ext: ExceptionBreaker (Diagnostic)");
             this.logger = new DiagnosticLogger(outputPane, "ExceptionBreaker");
 
-            var debugger = (IVsDebugger)GetGlobalService(typeof(SVsShellDebugger));
-            var watcher = new DebugSessionWatcher(debugger, this.logger);
-            var manager = new ExceptionBreakManager(watcher, logger);
+            var debugger = (IDebuggerInternal)GetGlobalService(typeof(SVsShellDebugger));
+            var sessionManager = new DebugSessionManager(debugger, this.logger);
+            var breakManager = new ExceptionBreakManager(sessionManager, logger);
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
             var menuCommandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
@@ -75,7 +76,9 @@ namespace ExceptionBreaker
             };
 
             this.dte = (DTE)this.GetService(typeof(DTE));
-            this.controller = new CommandController(dte, initBreakOnAllCommand, manager, watcher, logger);
+
+            var monitorSelection = (IVsMonitorSelection)this.GetService(typeof(IVsMonitorSelection));
+            this.controller = new CommandController(dte, initBreakOnAllCommand, monitorSelection, breakManager, this.logger);
         }
     }
 }
