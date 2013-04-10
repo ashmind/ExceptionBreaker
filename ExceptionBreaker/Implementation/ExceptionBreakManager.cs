@@ -45,6 +45,8 @@ namespace ExceptionBreaker.Implementation {
             this.sessionManager = sessionManager;
             this.logger = logger;
 
+            if (this.Session != null)
+                this.currentState = this.GetStateFromSession();
             this.sessionManager.DebugSessionChanged += this.sessionManager_DebugSessionChanged;
         }
 
@@ -61,8 +63,7 @@ namespace ExceptionBreaker.Implementation {
 
                 this.logger.WriteLine("Manager: CurrentState is being set to {0}.", value);
 
-                var session = this.sessionManager.DebugSession;
-                if (session != null)
+                if (this.Session != null)
                     this.EnsureManagedExceptionCache();
 
                 if (value == ExceptionBreakState.BreakOnAll || value == ExceptionBreakState.BreakOnNone) {

@@ -40,9 +40,12 @@ namespace ExceptionBreaker.Implementation {
             this.logger = logger;
             this.breakOnAllCommand = initBreakOnAllCommand(breakOnAllCommand_Callback);
 
-            this.selectionEventsCookie = this.SubscribeToSelectionEvents();
             this.requiredUIContextCookies = new HashSet<uint>(RequiredUIContexts.Select(ConvertToUIContextCookie));
 
+            this.UpdateCommandAvailability();
+            this.selectionEventsCookie = this.SubscribeToSelectionEvents();
+
+            this.UpdateCommandCheckedState();
             this.breakManager.CurrentStateChanged += breakManager_CurrentStateChanged;
 
             this.debugExceptionsEvents = this.SubscribeToDebugExceptionsCommand(dte);
@@ -98,12 +101,7 @@ namespace ExceptionBreaker.Implementation {
         }
 
         private void breakManager_CurrentStateChanged(object sender, EventArgs eventArgs) {
-            var @checked = (this.breakManager.CurrentState == ExceptionBreakState.BreakOnAll);
-            if (this.breakOnAllCommand.Checked == @checked)
-                return;
-            
-            this.breakOnAllCommand.Checked = @checked;
-            this.logger.WriteLine("Command: change of state, checked = {0}.", @checked);
+            UpdateCommandCheckedState();
         }
 
         public int OnCmdUIContextChanged(uint dwCmdUICookie, int fActive) {
@@ -133,10 +131,19 @@ namespace ExceptionBreaker.Implementation {
             var command = this.breakOnAllCommand;
             if (command.Enabled == enabledVisible) // Visible is always synchronized
                 return;
-            
+
             command.Enabled = enabledVisible;
             command.Visible = enabledVisible;
             this.logger.WriteLine("Command: change of state, enabled = {0}, visible = {0}.", enabledVisible);
+        }
+
+        private void UpdateCommandCheckedState() {
+            var @checked = (this.breakManager.CurrentState == ExceptionBreakState.BreakOnAll);
+            if (this.breakOnAllCommand.Checked == @checked)
+                return;
+
+            this.breakOnAllCommand.Checked = @checked;
+            this.logger.WriteLine("Command: change of state, checked = {0}.", @checked);
         }
 
         public void Dispose() {
