@@ -1,21 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <!--This is the file that defines the IDs for all the commands exposed by VisualStudio. -->
-  <Extern href="stdidcmd.h"/>
+  <Extern href="stdidcmd.h" />
 
   <!--This header contains the command ids for the menus provided by the shell. -->
-  <Extern href="vsshlids.h"/>
+  <Extern href="vsshlids.h" />
 
   <!--Definition of some VSCT specific constants. In this sample we use it for the IDs inside the guidOfficeIcon group. -->
-  <Extern href="msobtnid.h"/>
+  <!--<Extern href="msobtnid.h" xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" />-->
   
-  <Extern href="vsdbgcmd.h"/>
-  <Extern href="vsdebugguids.h"/>
+  <Extern href="vsdbgcmd.h" />
+  <Extern href="vsdebugguids.h" />
 
   <Commands package="guidPackage">
     <Groups>
       <Group guid="guidCommandSet" id="ToolbarGroup" priority="0x0600">
-        <Parent guid="guidVSDebugGroup" id="IDM_DEBUG_TOOLBAR"/>
+        <Parent guid="guidVSDebugGroup" id="IDM_DEBUG_TOOLBAR" />
       </Group>
     </Groups>
 
@@ -56,10 +56,7 @@
   </CommandPlacements>
 
   <KeyBindings>
-    <KeyBinding mod1="Control" key1="E"
-                mod2="Control" key2="B"
-                guid="guidCommandSet" id="cmdidBreakOnAll"
-                editor="guidVSStd97" />
+    <KeyBinding mod1="Control" key1="E" mod2="Control" key2="B" guid="guidCommandSet" id="cmdidBreakOnAll" editor="guidVSStd97" />
   </KeyBindings>
   
   <Symbols>

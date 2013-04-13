@@ -122,7 +122,8 @@
     <Compile Include="ComImports\IBreakpointManager.cs" />
     <Compile Include="ComImports\IDataTipEvents.cs" />
     <Compile Include="ComImports\IDataTipManager.cs" />
-    <Compile Include="ComImports\IDebuggerInternal.cs" />
+    <Compile Include="ComImports\IDebuggerInternal10.cs" />
+    <Compile Include="ComImports\IDebuggerInternal11.cs" />
     <Compile Include="ComImports\IDebuggerInternalEvents.cs" />
     <Compile Include="ComImports\IMAGEINFO_TYPE.cs" />
     <Compile Include="Implementation\DebugSessionEventSink.cs" />
@@ -134,6 +135,10 @@
     <Compile Include="Implementation\IDiagnosticLogger.cs" />
     <Compile Include="Implementation\CommandController.cs" />
     <Compile Include="ComImports\DataTipIdentity.cs" />
+    <Compile Include="Implementation\VersionSpecific\DebuggerInternal10Adapter.cs" />
+    <Compile Include="Implementation\VersionSpecific\DebuggerInternal11Adapter.cs" />
+    <Compile Include="Implementation\VersionSpecific\IDebuggerInternalAdapter.cs" />
+    <Compile Include="Implementation\VersionSpecific\VersionSpecificAdapterFactory.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

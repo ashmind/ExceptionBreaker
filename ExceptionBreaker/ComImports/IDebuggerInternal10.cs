@@ -1,13 +1,12 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.Debugger.Interop;
 
 // ReSharper disable CheckNamespace
 namespace Microsoft.VisualStudio.Debugger.Interop.Internal {
 // ReSharper restore CheckNamespace
     [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("1DA40549-8CCC-48CF-B99B-FC22FE3AFEDF")]
-    public interface IDebuggerInternal {
+    public interface IDebuggerInternal10 {
         [PreserveSig, MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         int GetSourceFileWithChecksum([In, MarshalAs(UnmanagedType.BStr)] string bstrSearchFilePath, [In] ref Guid checksumAlgorithm, [In, MarshalAs(UnmanagedType.SafeArray, SafeArraySubType = VarEnum.VT_UI1)] Array Checksum, [MarshalAs(UnmanagedType.BStr)] out string bstrFoundFilePath);
         [PreserveSig, MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using ExceptionBreaker.Implementation.VersionSpecific;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
-using Microsoft.VisualStudio.Debugger.Interop.Internal;
 
 namespace ExceptionBreaker.Implementation {
     /// <summary>
@@ -13,11 +13,11 @@ namespace ExceptionBreaker.Implementation {
     public class DebugSessionManager : IDisposable {
         public event EventHandler DebugSessionChanged = delegate {};
 
-        private readonly IDebuggerInternal debugger;
+        private readonly IDebuggerInternalAdapter debugger;
         private readonly IDiagnosticLogger logger;
         private readonly DebugSessionEventSink eventSink;
 
-        public DebugSessionManager(IDebuggerInternal debugger, IDiagnosticLogger logger) {
+        public DebugSessionManager(IDebuggerInternalAdapter debugger, IDiagnosticLogger logger) {
             this.debugger = debugger;
             this.logger = logger;
 
