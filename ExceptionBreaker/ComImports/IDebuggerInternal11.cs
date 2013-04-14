@@ -61,37 +61,37 @@ namespace Microsoft.VisualStudio.Debugger.Interop.Internal {
         int GetImageInfo([In, MarshalAs(UnmanagedType.BStr)] string imageName, [Out, ComAliasName("Microsoft.VisualStudio.Debugger.Interop.Internal.IMAGEINFO_TYPE"), MarshalAs(UnmanagedType.LPArray)] IMAGEINFO_TYPE[] pImageInfoType);
         [PreserveSig, MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         int IsInteropSupported([In, MarshalAs(UnmanagedType.BStr)] string imageName);
-
-        // some vtable method added in VS11 before CurrentSession. need Microsoft.VisualStudio.Debugger.Interop.Internal for VS2012 to figure it out
-        void STUB();
-
-        [DispId(0x6001001b)]
-        IDebugSession3 CurrentSession { [return: MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
+        [PreserveSig, MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        int GetErrorMessageByHRESULT([In, MarshalAs(UnmanagedType.Error)] int err, [MarshalAs(UnmanagedType.BStr)] out string bstrErrorMessage);
         [DispId(0x6001001c)]
+        IDebugSession3 CurrentSession { [return: MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
+        [DispId(0x6001001d)]
         IDebugProgram2 CurrentProgram { [return: MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; [param: In, MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] set; }
-        [DispId(0x6001001e)]
+        [DispId(0x6001001f)]
         IDebugThread2 CurrentThread { [return: MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; [param: In, MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] set; }
-        [DispId(0x60010020)]
-        IEnumDebugFrameInfo2 CurrentStack { [return: MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
         [DispId(0x60010021)]
+        IEnumDebugFrameInfo2 CurrentStack { [return: MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
+        [DispId(0x60010022)]
         IDebugStackFrame2 CurrentStackFrame { [return: MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; [param: In, MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] set; }
-        [DispId(0x60010023)]
-        IDebugCodeContext2 CurrentCodeContext { [return: MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
         [DispId(0x60010024)]
-        IDebugStackFrame2 TopMostStackFrame { [return: MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
+        IDebugCodeContext2 CurrentCodeContext { [return: MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
         [DispId(0x60010025)]
-        IDebugCodeContext2 TopMostCodeContext { [return: MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
+        IDebugStackFrame2 TopMostStackFrame { [return: MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
         [DispId(0x60010026)]
+        IDebugCodeContext2 TopMostCodeContext { [return: MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
+        [DispId(0x60010027)]
         bool InDisassemblyMode { [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; [param: In] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] set; }
-        [DispId(0x60010028)]
-        bool InApplyCodeChanges { [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
         [DispId(0x60010029)]
-        bool InBreakMode { [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
+        bool InApplyCodeChanges { [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
         [DispId(0x6001002a)]
-        IBreakpointManager BreakpointManager { [return: MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
+        bool InBreakMode { [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
         [DispId(0x6001002b)]
-        bool ArePendingEditsBlockingSetNext { [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
+        IBreakpointManager BreakpointManager { [return: MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
         [DispId(0x6001002c)]
+        bool ArePendingEditsBlockingSetNext { [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
+        [DispId(0x6001002d)]
         IDataTipManager DataTipManager { [return: MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
+        [DispId(0x6001002e)]
+        IDebugProcess2 CurrentRunModeProcess { [return: MarshalAs(UnmanagedType.Interface)] [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] get; }
     }
 }
