@@ -106,8 +106,6 @@ namespace ExceptionBreaker.Implementation {
 
         public int OnCmdUIContextChanged(uint dwCmdUICookie, int fActive) {
             try {
-                this.logger.WriteLine("Command UI context changed: cookie = {0} set to {1}.", dwCmdUICookie, fActive);
-
                 var active = (fActive != 0);
                 if (active) {
                     this.currentlyActiveUIContextCookies.Add(dwCmdUICookie);
