@@ -13,7 +13,7 @@ namespace ExceptionBreaker.Implementation.VersionSpecific {
         }
 
         public IDebuggerInternalAdapter AdaptDebuggerInternal(object debugger) {
-            if (version.Major == 11) 
+            if (version.Major >= 11) 
                 return new DebuggerInternal11Adapter((IDebuggerInternal11)debugger);
 
             if (version.Major == 10)
