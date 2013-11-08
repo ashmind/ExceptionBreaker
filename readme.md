@@ -8,7 +8,7 @@ It is available through both `Debug` toolbar and `Debug` top level menu.
 ### Installation
 
 The extension can be installed from [Visual Studio Gallery](http://visualstudiogallery.msdn.microsoft.com/50091e25-9e75-40d3-9780-a05892f474de).  
-Supported VS versions: 2010 and 2012.
+Supported VS versions: 2010, 2012, 2013.
 
 ### Details
 
