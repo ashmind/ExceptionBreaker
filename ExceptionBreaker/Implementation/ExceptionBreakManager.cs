@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
+using System.IO;
 
 namespace ExceptionBreaker.Implementation {
     /// <summary>
@@ -32,6 +33,9 @@ namespace ExceptionBreaker.Implementation {
         private const enum_EXCEPTION_STATE VSExceptionStateStopNotSet =
             enum_EXCEPTION_STATE.EXCEPTION_STOP_SECOND_CHANCE
           | enum_EXCEPTION_STATE.EXCEPTION_JUST_MY_CODE_SUPPORTED;
+          
+        private const string DirectoryName = "ExceptionBreaker";
+		private const string ExclusionFileName = "exclude.txt";
 
         public event EventHandler CurrentStateChanged = delegate { };
 
@@ -111,10 +115,74 @@ namespace ExceptionBreaker.Implementation {
 
                 index += 1;
             }
+            ExcludeExceptions(list);
 
             this.exceptionCache = list;
             this.logger.WriteLine("Exception cache is built: {0} exceptions.", this.exceptionCache.Count);
         }
+        
+        /// <summary>
+		/// Removes the exceptions listed in MyDocuments\ExceptionBreaker\exclude.txt
+		/// </summary>
+		/// <param name="list">
+		/// Complete list of CLR Exceptions
+		/// </param>
+		private void ExcludeExceptions(List<EXCEPTION_INFO> list)
+		{
+			try
+			{
+				// Create Directory if not created already
+				if (!Directory.Exists(string.Format("{0}\\{1}", 
+					Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
+					DirectoryName)))
+				{
+					Directory.CreateDirectory(string.Format("{0}\\{1}", 
+						Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
+						DirectoryName));
+					// Create File if not created already
+					if (!File.Exists(string.Format("{0}\\{1}\\{2}", 
+						Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
+						DirectoryName,
+						ExclusionFileName)))
+					{
+						FileStream stream = File.Create(string.Format("{0}\\{1}\\{2}", 
+							Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
+							DirectoryName,
+							ExclusionFileName));
+						stream.Close();
+					}
+				}
+				// Read the exclusion list
+				string[] exclusions = (string[])File.ReadAllLines(string.Format("{0}\\{1}\\exclude.txt", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "ExceptionBreaker"));
+				List<EXCEPTION_INFO> toRemove = new List<EXCEPTION_INFO>();
+				// Loop through the complete list and store the items to be removed
+				// Note: Cannot remove while foreach enumeration is in progress
+				foreach (EXCEPTION_INFO info in list)
+				{
+					foreach (string exclusion in exclusions)
+					{
+						if (string.Compare(info.bstrExceptionName, exclusion.Trim(), true) == 0)
+						{
+							if (!toRemove.Contains(info))
+							{
+								toRemove.Add(info);								
+							}
+							break;
+						}
+					}
+				}
+				// Now remove those stored excluded exceptions from the provided list
+				foreach (EXCEPTION_INFO info in toRemove)
+				{
+					list.Remove(info);					
+				}
+				toRemove.Clear();
+			}
+			catch (Exception ex)
+			{
+				// Do Nothing.
+			}
+		}
 
         /// <summary>
         /// Gets full list of child exceptions under given <paramref name="parent" />.
