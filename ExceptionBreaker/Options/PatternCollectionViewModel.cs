@@ -11,14 +11,12 @@ namespace ExceptionBreaker.Options {
     public class PatternCollectionViewModel {
         public PatternCollectionViewModel(ICollection<Regex> data) {
             Values = new ObservableCollection<PatternViewModel>(data.Select(r => new PatternViewModel(r)));
-            Values.CollectionChanged += (sender, e) => {
-                UpdateData(data);
-                var handler = (PropertyChangedEventHandler)((_, __) => UpdateData(data));
-                e.ProcessChanges<PatternViewModel>(
-                    newItem => newItem.Value.PropertyChanged += handler,
-                    oldItem => oldItem.Value.PropertyChanged -= handler
-                );
-            };
+            Values.CollectionChanged += (sender, e) => UpdateData(data);
+            var valuesChangedHandler = (PropertyChangedEventHandler)((_, __) => UpdateData(data));
+            Values.AddHandlers(
+                added => added.Value.PropertyChanged += valuesChangedHandler,
+                removed => removed.Value.PropertyChanged -= valuesChangedHandler
+            );
 
             Selected = new ObservableValue<PatternViewModel>();
 

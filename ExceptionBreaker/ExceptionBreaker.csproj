@@ -49,11 +49,13 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AshMind.Extensions">
-      <HintPath>..\packages\AshMind.Extensions.1.6.0\lib\net40\AshMind.Extensions.dll</HintPath>
+    <Reference Include="AshMind.Extensions, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\#packages\AshMind.Extensions.1.6.0\lib\net40\AshMind.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="CsvHelper">
-      <HintPath>..\packages\CsvHelper.2.10.0\lib\net40-client\CsvHelper.dll</HintPath>
+    <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\#packages\CsvHelper.2.10.0\lib\net40-client\CsvHelper.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.Debugger.Interop, Version=8.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -164,16 +166,17 @@
     <Compile Include="Implementation\CommandController.cs" />
     <Compile Include="ComImports\DataTipIdentity.cs" />
     <Compile Include="Implementation\IExceptionListProvider.cs" />
-    <Compile Include="Implementation\IReadOnlyValue.cs" />
-    <Compile Include="Implementation\IValue.cs" />
     <Compile Include="Implementation\VersionSpecific\DebuggerInternal10Adapter.cs" />
     <Compile Include="Implementation\VersionSpecific\DebuggerInternal11Adapter.cs" />
     <Compile Include="Implementation\VersionSpecific\IDebuggerInternalAdapter.cs" />
     <Compile Include="Implementation\VersionSpecific\VersionSpecificAdapterFactory.cs" />
     <Compile Include="Options\ExceptionViewModel.cs" />
     <Compile Include="Options\RegexValidationRule.cs" />
+    <Compile Include="Options\Support\BindingDelay.cs" />
+    <Compile Include="Options\Support\BindingDelayExtension.cs" />
     <Compile Include="Options\Support\CollectionSyncExtensions.cs" />
     <Compile Include="Options\ImprovedComponentModel\CustomPropertyDescriptor.cs" />
+    <Compile Include="Options\Support\DelayableBinding.cs" />
     <Compile Include="Options\Support\ProperListPropertyDescriptor.cs" />
     <Compile Include="Options\Support\ObservableCollectionExtensions.cs" />
     <Compile Include="Options\Support\IObservableResult.cs" />
@@ -196,7 +199,7 @@
     <Compile Include="Options\ImprovedComponentModel\PropertyDescriptorAttribute.cs" />
     <Compile Include="Options\ImprovedComponentModel\ImprovedTypeDescriptorProvider.cs" />
     <Compile Include="Options\ImprovedComponentModel\ImprovedTypeDescriptor.cs" />
-    <Compile Include="Options\WpfDialogPageIntegration.cs">
+    <Compile Include="Options\Support\WpfDialogPageIntegration.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

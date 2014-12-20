@@ -13,20 +13,23 @@ namespace ExceptionBreaker.Options {
         public OptionsViewModel(OptionsPageData data,  ObservableValue<IEnumerable<string>> exceptionNames) {
             _data = data;
             IgnoredPatterns = new PatternCollectionViewModel(data.Ignored);
-            AllExceptions = exceptionNames.GetObservable(v => new ReadOnlyCollection<ExceptionViewModel>(v.Select(n => new ExceptionViewModel(n, IgnoredPatterns.Selected)).ToArray()));
+            AllExceptions = exceptionNames.GetObservable(v => new ReadOnlyCollection<ExceptionViewModel>(
+                v.Select(n => new ExceptionViewModel(n, IgnoredPatterns.Selected)).ToArray()
+            ));
 
             _exceptionsMatchingIgnored = new ObservableCollection<ExceptionViewModel>();
             ExceptionsMatchingIgnored = new ReadOnlyObservableCollection<ExceptionViewModel>(_exceptionsMatchingIgnored);
 
             AllExceptions.PropertyChanged += (sender, e) => RecalculateExceptionsMatchingIgnored();
-            IgnoredPatterns.Values.CollectionChanged += (sender, e) => {
-                RecalculateExceptionsMatchingIgnored();
-                var handler = (PropertyChangedEventHandler)((_, __) => RecalculateExceptionsMatchingIgnored());
-                e.ProcessChanges<PatternViewModel>(
-                    newItem => newItem.Value.PropertyChanged += handler,
-                    oldItem => oldItem.Value.PropertyChanged -= handler
-                );
-            };
+            
+            IgnoredPatterns.Values.CollectionChanged += (sender, e) => RecalculateExceptionsMatchingIgnored();
+            var ignoredChangeHandler = (PropertyChangedEventHandler)((_, __) => RecalculateExceptionsMatchingIgnored());
+            IgnoredPatterns.Values.AddHandlers(
+                added => added.Value.PropertyChanged += ignoredChangeHandler,
+                removed => removed.Value.PropertyChanged -= ignoredChangeHandler
+            );
+
+            RecalculateExceptionsMatchingIgnored();
         }
 
         private void RecalculateExceptionsMatchingIgnored() {

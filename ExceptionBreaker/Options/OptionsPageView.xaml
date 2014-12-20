@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:options="clr-namespace:ExceptionBreaker.Options"
+             xmlns:support="clr-namespace:ExceptionBreaker.Options.Support"
              mc:Ignorable="d" 
              d:DesignHeight="500" d:DesignWidth="500">
   <Grid>
@@ -13,12 +14,17 @@
     
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
       <RowDefinition />
       <RowDefinition Height="Auto" />
       <RowDefinition />
     </Grid.RowDefinitions>
 
-    <DockPanel DockPanel.Dock="Top" LastChildFill="True" DataContext="{Binding Path=(options:OptionsViewModel.IgnoredPatterns)}">
+    <TextBlock Padding="5" Background="#fff6c4">
+      This is a new feature. Please don't expect it to be perfect and report any issues.
+    </TextBlock>
+
+    <DockPanel Grid.Row="1" DockPanel.Dock="Top" LastChildFill="True" DataContext="{Binding Path=(options:OptionsViewModel.IgnoredPatterns)}">
       <DockPanel.Resources>
         <Style TargetType="{x:Type Button}">
           <Setter Property="Margin" Value="5" />
@@ -51,7 +57,7 @@
       </Button>
       <Label>Do not toggle exceptions matching:</Label>
     </DockPanel>
-    <ListBox Grid.Row="1" ItemsSource="{Binding Path=(options:PatternCollectionViewModel.Values)}" SelectedItem="{Binding Path=(options:PatternCollectionViewModel.Selected).Value}" DataContext="{Binding Path=(options:OptionsViewModel.IgnoredPatterns)}">
+    <ListBox Grid.Row="2" ItemsSource="{Binding Path=(options:PatternCollectionViewModel.Values)}" SelectedItem="{Binding Path=(options:PatternCollectionViewModel.Selected).Value}" DataContext="{Binding Path=(options:OptionsViewModel.IgnoredPatterns)}">
       <ListBox.Resources>
         <Style TargetType="{x:Type TextBox}">
           <Setter Property="BorderThickness" Value="0" />
@@ -83,9 +89,10 @@
               <CheckBox DockPanel.Dock="Left" VerticalAlignment="Center" Margin="0 0 2 0" />
               <TextBox x:Name="text"
                        VerticalAlignment="Center"
-                       GotFocus="textPattern_OnGotFocus">
+                       GotFocus="textPattern_OnGotFocus"
+                       support:BindingDelay.List="{support:BindingDelay Property=TextBox.Text, Delay=500}">
                 <TextBox.Text>
-                  <Binding Path="(options:PatternViewModel.Value).Value" UpdateSourceTrigger="PropertyChanged">
+                  <Binding Path="(options:PatternViewModel.Value).Value" UpdateSourceTrigger="Explicit">
                     <Binding.ValidationRules>
                       <StaticResource ResourceKey="regexValidation" />
                     </Binding.ValidationRules>
@@ -98,23 +105,25 @@
       </ListBox.ItemTemplate>
     </ListBox>
 
-    <TextBlock Grid.Row="2" Margin="5">Preview:</TextBlock>
-    <ListBox Grid.Row="3" Background="Transparent" Padding="2" ItemsSource="{Binding Path=(options:OptionsViewModel.ExceptionsMatchingIgnored)}">
-      <ListBox.ItemTemplate>
-        <DataTemplate>
-          <TextBlock Text="{Binding Path=(options:ExceptionViewModel.Name)}">
-            <TextBlock.Style>
-              <Style TargetType="{x:Type TextBlock}">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding Path=(options:ExceptionViewModel.MatchesSelected).Value}" Value="True">
-                    <Setter Property="FontWeight" Value="Bold" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </TextBlock.Style>
-          </TextBlock>
-        </DataTemplate>
-      </ListBox.ItemTemplate>
-    </ListBox>
+    <TextBlock Grid.Row="3" Margin="5">Preview:</TextBlock>
+    <ScrollViewer Grid.Row="4" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" Margin="10 0 0 0">
+      <ItemsControl  Background="Transparent" ItemsSource="{Binding Path=(options:OptionsViewModel.ExceptionsMatchingIgnored)}">       
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding Path=(options:ExceptionViewModel.Name)}">
+              <TextBlock.Style>
+                <Style TargetType="{x:Type TextBlock}">
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding Path=(options:ExceptionViewModel.MatchesSelected).Value}" Value="True">
+                      <Setter Property="FontWeight" Value="Bold" />
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </TextBlock.Style>
+            </TextBlock>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
   </Grid>
 </UserControl>

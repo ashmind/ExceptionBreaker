@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace ExceptionBreaker.Options.Support {
@@ -15,6 +16,13 @@ namespace ExceptionBreaker.Options.Support {
             };
 
             return result;
+        }
+
+        public static void AddHandlers<T>(this ObservableCollection<T> collection, Action<T> onAdded, Action<T> onRemoved) {
+            foreach (var item in collection) {
+                onAdded(item);
+            }
+            collection.CollectionChanged += (sender, e) => e.ProcessChanges(onAdded, onRemoved);
         }
 
         public static void ProcessChanges<T>(this NotifyCollectionChangedEventArgs e, Action<T> processNew, Action<T> processOld) {
