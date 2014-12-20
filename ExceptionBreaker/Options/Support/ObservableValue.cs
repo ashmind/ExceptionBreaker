@@ -1,0 +1,42 @@
+﻿using System;
+using System.ComponentModel;
+
+namespace ExceptionBreaker.Options.Support {
+    public class ObservableValue<T> : IObservableResult<T> {
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+        private static readonly PropertyChangedEventArgs EventArgs = new PropertyChangedEventArgs("Value");
+
+        private T _value;
+
+        public ObservableValue() {
+        }
+
+        public ObservableValue(T value) {
+            _value = value;
+        }
+        
+        public T Value {
+            get { return _value; }
+            set {
+                if (Equals(_value, value))
+                    return;
+
+                _value = value;
+                PropertyChanged(this, EventArgs);
+            }
+        }
+
+        public IObservableResult<TResult> GetObservable<TResult>(Func<T, TResult> get, Action<T, T, Action> subscribeExtra = null) {
+            var result = new ObservableValue<TResult>(get(Value));
+            var lastValue = Value;
+            PropertyChanged += (sender, _) => {
+                var that = (ObservableValue<T>)sender;
+                result.Value = get(that.Value);
+                if (subscribeExtra != null)
+                    subscribeExtra(that.Value, lastValue, () => result.Value = get(that.Value));
+                lastValue = Value;
+            };
+            return result;
+        }
+    }
+}

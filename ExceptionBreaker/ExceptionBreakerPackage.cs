@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
 using EnvDTE;
 using ExceptionBreaker.Implementation;
 using ExceptionBreaker.Implementation.VersionSpecific;
-using Microsoft.VisualStudio.Debugger.Interop.Internal;
+using ExceptionBreaker.Options;
+using ExceptionBreaker.Options.ImprovedComponentModel;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
 
@@ -22,21 +24,22 @@ namespace ExceptionBreaker
     /// IVsPackage interface and uses the registration attributes defined in the framework to 
     /// register itself and its components with the shell.
     /// </summary>
-    // This attribute tells the PkgDef creation utility (CreatePkgDef.exe) that this class is
-    // a package.
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    // This attribute is used to register the information needed to show the this package
-    // in the Help/About dialog of Visual Studio.
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
+    [ProvideAutoLoad(UIContextGuids80.NoSolution)]
     [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
     [ProvideAutoLoad(UIContextGuids80.Debugging)]
     [ProvideMenuResource("Menus.2012.ctmenu", 1)]
+    [ProvideOptionPageInExistingCategory(typeof(OptionsPageData), "Debugger", "ExceptionBreaker", 110)]
     [Guid(GuidList.PackageString)]
-    public sealed class ExceptionBreakerPackage : Microsoft.VisualStudio.Shell.Package
-    {
-        private CommandController controller;
-        private IDiagnosticLogger logger;
-        private DTE dte;
+    public sealed class ExceptionBreakerPackage : Package {
+        private CommandController _controller;
+        private DTE _dte;
+
+        public IDiagnosticLogger Logger { get; private set; }
+        public ExceptionBreakManager ExceptionBreakManager { get; private set; }
+
+        public static ExceptionBreakerPackage Current { get; private set; }
 
         /// <summary>
         /// Default constructor of the package.
@@ -48,8 +51,9 @@ namespace ExceptionBreaker
         public ExceptionBreakerPackage()
         {
             Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this));
+            Current = this;
         }
-
+        
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
@@ -58,19 +62,29 @@ namespace ExceptionBreaker
         {
             Trace.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this));
             base.Initialize();
+            Logger = new ExtensionLogger("ExceptionBreaker", paneCaption => GetOutputPane(GuidList.OutputPane, paneCaption));
 
-            var outputPane = this.GetOutputPane(GuidList.OutputPane, "Ext: ExceptionBreaker (Diagnostic)");
-            this.logger = new DiagnosticLogger(outputPane, "ExceptionBreaker");
-
-            this.dte = (DTE)this.GetService(typeof(DTE));
-            var versionSpecificFactory = new VersionSpecificAdapterFactory(this.dte);
-            var debugger = GetGlobalService(typeof(SVsShellDebugger));
-            var sessionManager = new DebugSessionManager(versionSpecificFactory.AdaptDebuggerInternal(debugger), this.logger);
-            var breakManager = new ExceptionBreakManager(sessionManager, logger);
+            _dte = (DTE)GetService(typeof(DTE));
+            SetupExceptionBreakManager();
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
-            var menuCommandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            SetupCommandController();
+        }
 
+        private void SetupExceptionBreakManager() {
+            var versionSpecificFactory = new VersionSpecificAdapterFactory(_dte);
+            var debugger = GetGlobalService(typeof (SVsShellDebugger));
+            var sessionManager = new DebugSessionManager(versionSpecificFactory.AdaptDebuggerInternal(debugger), Logger);
+            var optionsPage = new Lazy<OptionsPageData>(() => (OptionsPageData)GetDialogPage(typeof (OptionsPageData)));
+            ExceptionBreakManager = new ExceptionBreakManager(
+                sessionManager,
+                name => optionsPage.Value.Ignored.Any(r => r.IsMatch(name)),
+                Logger
+            );
+        }
+
+        private void SetupCommandController() {
+            var menuCommandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             Func<EventHandler, MenuCommand> initBreakOnAllCommand = callback => {
                 var command = new OleMenuCommand(id: CommandIDs.BreakOn, invokeHandler: callback);
                 menuCommandService.AddCommand(command);
@@ -79,7 +93,7 @@ namespace ExceptionBreaker
             };
 
             var monitorSelection = (IVsMonitorSelection)this.GetService(typeof(IVsMonitorSelection));
-            this.controller = new CommandController(dte, initBreakOnAllCommand, monitorSelection, breakManager, this.logger);
+            _controller = new CommandController(_dte, initBreakOnAllCommand, monitorSelection, ExceptionBreakManager, Logger);
         }
     }
 }

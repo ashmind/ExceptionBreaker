@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ExceptionBreaker</RootNamespace>
     <AssemblyName>ExceptionBreaker</AssemblyName>
-    <SignAssembly>True</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
@@ -49,6 +49,12 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AshMind.Extensions">
+      <HintPath>..\packages\AshMind.Extensions.1.6.0\lib\net40\AshMind.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="CsvHelper">
+      <HintPath>..\packages\CsvHelper.2.10.0\lib\net40-client\CsvHelper.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.Debugger.Interop, Version=8.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -63,13 +69,19 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="EnvDTE">
@@ -147,36 +159,57 @@
     <Compile Include="Implementation\ExceptionBreakManager.cs" />
     <Compile Include="Implementation\DebugSessionManager.cs" />
     <Compile Include="Guids.cs" />
-    <Compile Include="Implementation\DiagnosticLogger.cs" />
+    <Compile Include="Implementation\ExtensionLogger.cs" />
     <Compile Include="Implementation\IDiagnosticLogger.cs" />
     <Compile Include="Implementation\CommandController.cs" />
     <Compile Include="ComImports\DataTipIdentity.cs" />
+    <Compile Include="Implementation\IExceptionListProvider.cs" />
+    <Compile Include="Implementation\IReadOnlyValue.cs" />
+    <Compile Include="Implementation\IValue.cs" />
     <Compile Include="Implementation\VersionSpecific\DebuggerInternal10Adapter.cs" />
     <Compile Include="Implementation\VersionSpecific\DebuggerInternal11Adapter.cs" />
     <Compile Include="Implementation\VersionSpecific\IDebuggerInternalAdapter.cs" />
     <Compile Include="Implementation\VersionSpecific\VersionSpecificAdapterFactory.cs" />
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
+    <Compile Include="Options\ExceptionViewModel.cs" />
+    <Compile Include="Options\RegexValidationRule.cs" />
+    <Compile Include="Options\Support\CollectionSyncExtensions.cs" />
+    <Compile Include="Options\ImprovedComponentModel\CustomPropertyDescriptor.cs" />
+    <Compile Include="Options\Support\ProperListPropertyDescriptor.cs" />
+    <Compile Include="Options\Support\ObservableCollectionExtensions.cs" />
+    <Compile Include="Options\Support\IObservableResult.cs" />
+    <Compile Include="Options\Support\ObservableValue.cs">
+      <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Options\OptionsPageData.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Options\OptionsPageView.xaml.cs">
+      <DependentUpon>OptionsPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Options\OptionsViewModel.cs" />
+    <Compile Include="Options\PatternCollectionViewModel.cs" />
+    <Compile Include="Options\PatternViewModel.cs" />
+    <Compile Include="Options\ProvideOptionPageInExistingCategoryAttribute.cs" />
+    <Compile Include="Options\RegexListTypeConverter.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ExceptionBreakerPackage.cs" />
+    <Compile Include="Options\ImprovedComponentModel\PropertyDescriptorAttribute.cs" />
+    <Compile Include="Options\ImprovedComponentModel\ImprovedTypeDescriptorProvider.cs" />
+    <Compile Include="Options\ImprovedComponentModel\ImprovedTypeDescriptor.cs" />
+    <Compile Include="Options\WpfDialogPageIntegration.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CommandIDs.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -191,6 +224,8 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="ComImports\ReadMe.txt" />
+    <Resource Include="Resources\Delete.png" />
+    <Resource Include="Resources\Add.png" />
     <Content Include="Screenshot.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -207,7 +242,12 @@
     <Resource Include="Resources\Commands.VS2012.png" />
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Page Include="Options\OptionsPageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Text;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
@@ -10,7 +11,7 @@ namespace ExceptionBreaker.Implementation {
     /// <summary>
     /// Manages current break state and applies state changes to <see cref="IDebugSession2" />.
     /// </summary>
-    public class ExceptionBreakManager {
+    public class ExceptionBreakManager : IExceptionListProvider {
         // Note: I did not research any specific differences between JustMyCode=On/Off.
         // the constants below seem to work well enough, but I would not be surprised if
         // there is something I have not noticed
@@ -34,86 +35,99 @@ namespace ExceptionBreaker.Implementation {
           | enum_EXCEPTION_STATE.EXCEPTION_JUST_MY_CODE_SUPPORTED;
 
         public event EventHandler CurrentStateChanged = delegate { };
+        public event EventHandler ExceptionNamesChanged = delegate { };
 
-        private readonly DebugSessionManager sessionManager;
-        private readonly IDiagnosticLogger logger;
+        private readonly DebugSessionManager _sessionManager;
+        private readonly Func<string, bool> _ignorePredicate;
+        private readonly IDiagnosticLogger _logger;
 
-        private ICollection<EXCEPTION_INFO> exceptionCache;
-        private ExceptionBreakState currentState;
+        private ICollection<EXCEPTION_INFO> _exceptionCache;
+        private ExceptionBreakState _currentState;
 
-        public ExceptionBreakManager(DebugSessionManager sessionManager, IDiagnosticLogger logger) {
-            this.sessionManager = sessionManager;
-            this.logger = logger;
+        public ExceptionBreakManager(DebugSessionManager sessionManager, Func<string, bool> ignorePredicate, IDiagnosticLogger logger) {
+            _sessionManager = sessionManager;
+            _ignorePredicate = ignorePredicate;
+            _logger = logger;
 
-            if (this.Session != null)
-                this.currentState = this.GetStateFromSession();
-            this.sessionManager.DebugSessionChanged += this.sessionManager_DebugSessionChanged;
+            if (Session != null)
+                _currentState = GetStateFromSession();
+            _sessionManager.DebugSessionChanged += sessionManager_DebugSessionChanged;
         }
 
         // Just for convenience
         private IDebugSession2 Session {
-            get { return this.sessionManager.DebugSession; }
+            get { return _sessionManager.DebugSession; }
         }
 
         public ExceptionBreakState CurrentState {
-            get { return this.currentState; }
+            get { return _currentState; }
             set {
-                if (this.currentState == value)
+                if (_currentState == value)
                     return;
 
-                this.logger.WriteLine("Manager: CurrentState is being set to {0}.", value);
+                _logger.WriteLine("Manager: CurrentState is being set to {0}.", value);
 
-                if (this.Session != null)
-                    this.EnsureManagedExceptionCache();
+                if (Session != null)
+                    EnsureManagedExceptionCache();
 
                 if (value == ExceptionBreakState.BreakOnAll || value == ExceptionBreakState.BreakOnNone) {
-                    if (this.exceptionCache == null) {
-                        this.logger.WriteLine("Manager: Cache not available, cannot apply state to session.");
+                    if (_exceptionCache == null) {
+                        _logger.WriteLine("Manager: Cache not available, cannot apply state to session.");
                         return;
                     }
 
-                    this.ApplyStateToSession(value);
+                    ApplyStateToSession(value);
                 }
 
-                this.currentState = value;
-                this.logger.WriteLine("Manager: CurrentState was set to {0}.", value);
-                this.CurrentStateChanged(this, EventArgs.Empty);
+                _currentState = value;
+                _logger.WriteLine("Manager: CurrentState was set to {0}.", value);
+                CurrentStateChanged(this, EventArgs.Empty);
             }
+        }
+
+        public IEnumerable<string> GetExceptionNames() {
+            if (Session == null)
+                return Enumerable.Empty<string>();
+
+            EnsureManagedExceptionCache();
+            return _exceptionCache.Select(e => e.bstrExceptionName);
         }
 
         public void RefreshCurrentState() {
             // not using property here as it would try to re-apply state
-            this.currentState = this.GetStateFromSession();
-            this.CurrentStateChanged(this, EventArgs.Empty);
+            _currentState = GetStateFromSession();
+            CurrentStateChanged(this, EventArgs.Empty);
         }
 
         private void sessionManager_DebugSessionChanged(object sender, EventArgs e) {
-            if (this.Session == null)
+            if (Session == null)
                 return;
 
-            if (this.currentState == ExceptionBreakState.Inconclusive || this.currentState == ExceptionBreakState.Unknown)
+            EnsureManagedExceptionCache();
+            if (_currentState == ExceptionBreakState.Inconclusive || _currentState == ExceptionBreakState.Unknown)
                 RefreshCurrentState();
         }
 
         private void EnsureManagedExceptionCache() {
-            if (this.exceptionCache != null)
+            if (_exceptionCache != null)
                 return;
 
             var guid = VSConstants.DebugEnginesGuids.ManagedOnly_guid;
 
-            var root = this.GetDefaultExceptions();
+            var root = GetDefaultExceptions();
             var list = new List<EXCEPTION_INFO>(root.Where(e => e.guidType == guid));
             var index = 0;
 
             while (index < list.Count) {
-                var children = this.GetDefaultExceptions(list[index]);
+                var children = GetDefaultExceptions(list[index]);
                 list.AddRange(children);
 
                 index += 1;
             }
 
-            this.exceptionCache = list;
-            this.logger.WriteLine("Exception cache is built: {0} exceptions.", this.exceptionCache.Count);
+            _exceptionCache = list;
+            _logger.WriteLine("Exception cache is built: {0} exceptions.", _exceptionCache.Count);
+            ExceptionNamesChanged(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -122,7 +136,7 @@ namespace ExceptionBreaker.Implementation {
         /// </summary>
         private EXCEPTION_INFO[] GetDefaultExceptions(EXCEPTION_INFO? parent = null) {
             IEnumDebugExceptionInfo2 enumerator;
-            var hr = this.Session.EnumDefaultExceptions(parent != null ? new[] { parent.Value } : null, out enumerator);
+            var hr = Session.EnumDefaultExceptions(parent != null ? new[] { parent.Value } : null, out enumerator);
 
             return GetExceptionsFromEnumerator(hr, enumerator);
         }
@@ -135,7 +149,7 @@ namespace ExceptionBreaker.Implementation {
             var guid = VSConstants.DebugEnginesGuids.ManagedOnly_guid;
 
             IEnumDebugExceptionInfo2 enumerator;
-            var hr = this.Session.EnumSetExceptions(null, null, guid, out enumerator);
+            var hr = Session.EnumSetExceptions(null, null, guid, out enumerator);
 
             return GetExceptionsFromEnumerator(hr, enumerator);
         }
@@ -169,6 +183,9 @@ namespace ExceptionBreaker.Implementation {
             var exceptionThatCausedChangeFromUnknown = new EXCEPTION_INFO();
 
             foreach (var exception in GetSetManagedExceptions()) {
+                if (_ignorePredicate(exception.bstrExceptionName))
+                    continue;
+
                 var @break = (((enum_EXCEPTION_STATE)exception.dwState & VSExceptionStateStopAllInfer) == VSExceptionStateStopAllInfer);
                 var stateFromException = @break ? ExceptionBreakState.BreakOnAll : ExceptionBreakState.BreakOnNone;
 
@@ -179,23 +196,25 @@ namespace ExceptionBreaker.Implementation {
                 }
 
                 if (inferredState != stateFromException) {
-                    this.logger.WriteLine("Manager: inconclusive state diagnostic.");
-                    this.logger.WriteLine("  Previous state:        {0}.", inferredState);
-                    this.logger.WriteLine("  Previous exception:    {0}; {1}.", exceptionThatCausedChangeFromUnknown.bstrExceptionName, (enum_EXCEPTION_STATE)exceptionThatCausedChangeFromUnknown.dwState);
-                    this.logger.WriteLine("  Conflicting state:     {0}.", stateFromException);
-                    this.logger.WriteLine("  Conflicting exception: {0}; {1}.", exception.bstrExceptionName, (enum_EXCEPTION_STATE)exception.dwState);
+                    _logger.WriteLine("Manager: inconclusive state diagnostic.");
+                    _logger.WriteLine("  Previous state:        {0}.", inferredState);
+                    _logger.WriteLine("  Previous exception:    {0}; {1}.", exceptionThatCausedChangeFromUnknown.bstrExceptionName, (enum_EXCEPTION_STATE)exceptionThatCausedChangeFromUnknown.dwState);
+                    _logger.WriteLine("  Conflicting state:     {0}.", stateFromException);
+                    _logger.WriteLine("  Conflicting exception: {0}; {1}.", exception.bstrExceptionName, (enum_EXCEPTION_STATE)exception.dwState);
 
                     inferredState = ExceptionBreakState.Inconclusive;
                     break;
                 }
             }
 
-            this.logger.WriteLine("Manager: inferred state is {0}.", inferredState);
+            _logger.WriteLine("Manager: inferred state is {0}.", inferredState);
             return inferredState;
         }
 
         private void ApplyStateToSession(ExceptionBreakState state) {
-            this.logger.WriteLine("Manager: Applying {0} to debug session.", state);
+            const int SkippedExceptionLogLimit = 25;
+
+            _logger.WriteLine("Manager: Applying {0} to debug session.", state);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
@@ -204,25 +223,37 @@ namespace ExceptionBreaker.Implementation {
                                   : (uint)VSExceptionStateStopNotSet;
 
             var guid = Guid.Empty;
-            var hr = this.Session.RemoveAllSetExceptions(ref guid);
+            var hr = Session.RemoveAllSetExceptions(ref guid);
             if (hr != VSConstants.S_OK)
                 Marshal.ThrowExceptionForHR(hr);
 
             var updated = new EXCEPTION_INFO[1];
-            foreach (var exception in this.exceptionCache) {
+            var skippedExceptionCount = 0;
+            foreach (var exception in _exceptionCache) {
+                if (_ignorePredicate(exception.bstrExceptionName)) {
+                    if (skippedExceptionCount < SkippedExceptionLogLimit)
+                        _logger.WriteLine("  Skipped exception {0} (matches ignore rule).", exception.bstrExceptionName);
+
+                    skippedExceptionCount += 1;
+                    continue;
+                }
+
                 updated[0] = new EXCEPTION_INFO {
                     guidType = exception.guidType,
                     bstrExceptionName = exception.bstrExceptionName,
                     dwState = newExceptionState
                 };
 
-                hr = this.Session.SetException(updated);
+                hr = Session.SetException(updated);
                 if (hr != VSConstants.S_OK)
                     Marshal.ThrowExceptionForHR(hr);
             }
 
+            if (skippedExceptionCount > SkippedExceptionLogLimit)
+                _logger.WriteLine("  Skipped {0} more exceptions (match ignore rule).", skippedExceptionCount - SkippedExceptionLogLimit);
+
             stopwatch.Stop();
-            this.logger.WriteLine("  Finished in {0}ms.", stopwatch.ElapsedMilliseconds);
+            _logger.WriteLine("  Finished in {0}ms.", stopwatch.ElapsedMilliseconds);
         }
     }
 }
