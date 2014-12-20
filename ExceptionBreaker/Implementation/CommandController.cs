@@ -18,16 +18,16 @@ namespace ExceptionBreaker.Implementation {
             VSConstants.UICONTEXT.SolutionExists_guid
         };
 
-        private readonly MenuCommand breakOnAllCommand;
-        private readonly IVsMonitorSelection monitorSelection;
-        private readonly ExceptionBreakManager breakManager;
-        private readonly IDiagnosticLogger logger;
-        private readonly CommandEvents debugExceptionsEvents;
+        private readonly MenuCommand _breakOnAllCommand;
+        private readonly IVsMonitorSelection _monitorSelection;
+        private readonly ExceptionBreakManager _breakManager;
+        private readonly IDiagnosticLogger _logger;
+        private readonly CommandEvents _debugExceptionsEvents;
 
-        private readonly uint selectionEventsCookie;
+        private readonly uint _selectionEventsCookie;
 
-        private readonly HashSet<uint> requiredUIContextCookies;
-        private readonly HashSet<uint> currentlyActiveUIContextCookies = new HashSet<uint>();
+        private readonly HashSet<uint> _requiredUiContextCookies;
+        private readonly HashSet<uint> _currentlyActiveUiContextCookies = new HashSet<uint>();
 
         public CommandController(DTE dte,
                                  Func<EventHandler, MenuCommand> initBreakOnAllCommand,
@@ -35,25 +35,25 @@ namespace ExceptionBreaker.Implementation {
                                  ExceptionBreakManager breakManager,
                                  IDiagnosticLogger logger)
         {
-            this.monitorSelection = monitorSelection;
-            this.breakManager = breakManager;
-            this.logger = logger;
-            this.breakOnAllCommand = initBreakOnAllCommand(breakOnAllCommand_Callback);
+            _monitorSelection = monitorSelection;
+            _breakManager = breakManager;
+            _logger = logger;
+            _breakOnAllCommand = initBreakOnAllCommand(breakOnAllCommand_Callback);
 
-            this.requiredUIContextCookies = new HashSet<uint>(RequiredUIContexts.Select(ConvertToUIContextCookie));
+            _requiredUiContextCookies = new HashSet<uint>(RequiredUIContexts.Select(ConvertToUIContextCookie));
 
-            this.UpdateCommandAvailability();
-            this.selectionEventsCookie = this.SubscribeToSelectionEvents();
+            UpdateCommandAvailability();
+            _selectionEventsCookie = SubscribeToSelectionEvents();
 
-            this.UpdateCommandCheckedState();
-            this.breakManager.CurrentStateChanged += breakManager_CurrentStateChanged;
+            UpdateCommandCheckedState();
+            _breakManager.CurrentStateChanged += breakManager_CurrentStateChanged;
 
-            this.debugExceptionsEvents = this.SubscribeToDebugExceptionsCommand(dte);
+            _debugExceptionsEvents = SubscribeToDebugExceptionsCommand(dte);
         }
 
         private uint SubscribeToSelectionEvents() {
             uint cookie;
-            var hr = this.monitorSelection.AdviseSelectionEvents(this, out cookie);
+            var hr = _monitorSelection.AdviseSelectionEvents(this, out cookie);
             if (hr != VSConstants.S_OK)
                 Marshal.ThrowExceptionForHR(hr);
 
@@ -65,37 +65,37 @@ namespace ExceptionBreaker.Implementation {
                 typeof(VSConstants.VSStd97CmdID).GUID.ToString("B"),
                 (int)VSConstants.VSStd97CmdID.Exceptions
             ];
-            events.AfterExecute += this.debugExceptionsEvents_AfterExecute;
+            events.AfterExecute += debugExceptionsEvents_AfterExecute;
 
             return events;
         }
 
         private uint ConvertToUIContextCookie(Guid guid) {
             uint cookie;
-            var hr = this.monitorSelection.GetCmdUIContextCookie(ref guid, out cookie);
+            var hr = _monitorSelection.GetCmdUIContextCookie(ref guid, out cookie);
             if (hr != VSConstants.S_OK)
                 Marshal.ThrowExceptionForHR(hr);
 
-            this.logger.WriteLine("Mapped UI context {0} to cookie {1}.", guid, cookie);
+            _logger.WriteLine("Mapped UI context {0} to cookie {1}.", guid, cookie);
             return cookie;
         }
 
         private void debugExceptionsEvents_AfterExecute(string Guid, int ID, object CustomIn, object CustomOut) {
-            this.logger.WriteLine("Debug.Exceptions was just executed.");
-            this.breakManager.RefreshCurrentState();
+            _logger.WriteLine("Debug.Exceptions was just executed.");
+            _breakManager.RefreshCurrentState();
         }
 
         private void breakOnAllCommand_Callback(object sender, EventArgs e) {
             try {
-                var targetState = this.breakManager.CurrentState != ExceptionBreakState.BreakOnAll
+                var targetState = _breakManager.CurrentState != ExceptionBreakState.BreakOnAll
                                 ? ExceptionBreakState.BreakOnAll
                                 : ExceptionBreakState.BreakOnNone;
 
-                this.logger.WriteLine("Command: toggled, current = {0}, new = {1}.", this.breakManager.CurrentState, targetState);
-                this.breakManager.CurrentState = targetState;
+                _logger.WriteLine("Command: toggled, current = {0}, new = {1}.", _breakManager.CurrentState, targetState);
+                _breakManager.CurrentState = targetState;
             }
             catch (Exception ex) {
-                this.logger.WriteLine("Unexpected exception: " + ex);
+                _logger.WriteLine("Unexpected exception: " + ex);
                 MessageBox.Show(ex.Message, "Error in ExceptionBreaker extension", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -108,48 +108,48 @@ namespace ExceptionBreaker.Implementation {
             try {
                 var active = (fActive != 0);
                 if (active) {
-                    this.currentlyActiveUIContextCookies.Add(dwCmdUICookie);
+                    _currentlyActiveUiContextCookies.Add(dwCmdUICookie);
                 }
                 else {
-                    this.currentlyActiveUIContextCookies.Remove(dwCmdUICookie);
+                    _currentlyActiveUiContextCookies.Remove(dwCmdUICookie);
                 }
 
                 UpdateCommandAvailability();
                 return VSConstants.S_OK;
             }
             catch (Exception ex) {
-                this.logger.WriteLine("Unexpected exception: " + ex);
+                _logger.WriteLine("Unexpected exception: " + ex);
                 return VSConstants.E_FAIL;
             }
         }
 
         private void UpdateCommandAvailability() {
-            var enabledVisible = this.requiredUIContextCookies.Intersect(this.currentlyActiveUIContextCookies).Any();
+            var enabledVisible = _requiredUiContextCookies.Intersect(_currentlyActiveUiContextCookies).Any();
 
-            var command = this.breakOnAllCommand;
+            var command = _breakOnAllCommand;
             if (command.Enabled == enabledVisible) // Visible is always synchronized
                 return;
 
             command.Enabled = enabledVisible;
             command.Visible = enabledVisible;
-            this.logger.WriteLine("Command: change of state, enabled = {0}, visible = {0}.", enabledVisible);
+            _logger.WriteLine("Command: change of state, enabled = {0}, visible = {0}.", enabledVisible);
         }
 
         private void UpdateCommandCheckedState() {
-            var @checked = (this.breakManager.CurrentState == ExceptionBreakState.BreakOnAll);
-            if (this.breakOnAllCommand.Checked == @checked)
+            var @checked = (_breakManager.CurrentState == ExceptionBreakState.BreakOnAll);
+            if (_breakOnAllCommand.Checked == @checked)
                 return;
 
-            this.breakOnAllCommand.Checked = @checked;
-            this.logger.WriteLine("Command: change of state, checked = {0}.", @checked);
+            _breakOnAllCommand.Checked = @checked;
+            _logger.WriteLine("Command: change of state, checked = {0}.", @checked);
         }
 
         public void Dispose() {
             // not completely implemented, please ignore for now
-            this.monitorSelection.UnadviseSelectionEvents(this.selectionEventsCookie);
+            _monitorSelection.UnadviseSelectionEvents(_selectionEventsCookie);
 
-            this.debugExceptionsEvents.AfterExecute -= debugExceptionsEvents_AfterExecute;
-            this.breakManager.CurrentStateChanged -= breakManager_CurrentStateChanged;
+            _debugExceptionsEvents.AfterExecute -= debugExceptionsEvents_AfterExecute;
+            _breakManager.CurrentStateChanged -= breakManager_CurrentStateChanged;
         }
 
         #region IVsSelectionEvents Members

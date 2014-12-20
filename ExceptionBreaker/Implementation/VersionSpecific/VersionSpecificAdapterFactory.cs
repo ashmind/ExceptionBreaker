@@ -6,20 +6,20 @@ using Microsoft.VisualStudio.Debugger.Interop.Internal;
 
 namespace ExceptionBreaker.Implementation.VersionSpecific {
     public class VersionSpecificAdapterFactory {
-        private readonly Version version;
+        private readonly Version _version;
 
         public VersionSpecificAdapterFactory(DTE dte) {
-            this.version = new Version(dte.Version);
+            _version = new Version(dte.Version);
         }
 
         public IDebuggerInternalAdapter AdaptDebuggerInternal(object debugger) {
-            if (version.Major >= 11) 
+            if (_version.Major >= 11) 
                 return new DebuggerInternal11Adapter((IDebuggerInternal11)debugger);
 
-            if (version.Major == 10)
+            if (_version.Major == 10)
                 return new DebuggerInternal10Adapter((IDebuggerInternal10)debugger);
 
-            throw new NotSupportedException("Visual Studio version " + this.version + " is not supported.");
+            throw new NotSupportedException("Visual Studio version " + _version + " is not supported.");
         }
     }
 }

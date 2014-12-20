@@ -13,34 +13,34 @@ namespace ExceptionBreaker.Implementation {
     public class DebugSessionManager : IDisposable {
         public event EventHandler DebugSessionChanged = delegate {};
 
-        private readonly IDebuggerInternalAdapter debugger;
-        private readonly IDiagnosticLogger logger;
-        private readonly DebugSessionEventSink eventSink;
+        private readonly IDebuggerInternalAdapter _debugger;
+        private readonly IDiagnosticLogger _logger;
+        private readonly DebugSessionEventSink _eventSink;
 
         public DebugSessionManager(IDebuggerInternalAdapter debugger, IDiagnosticLogger logger) {
-            this.debugger = debugger;
-            this.logger = logger;
+            _debugger = debugger;
+            _logger = logger;
 
-            this.eventSink = new DebugSessionEventSink();
-            this.eventSink.SessionCreated += (sender, args) => this.ProcessSessionCreateOrDestoryEvent("created");
-            this.eventSink.SessionDestroyed += (sender, args) => this.ProcessSessionCreateOrDestoryEvent("destroyed");
+            _eventSink = new DebugSessionEventSink();
+            _eventSink.SessionCreated += (sender, args) => ProcessSessionCreateOrDestoryEvent("created");
+            _eventSink.SessionDestroyed += (sender, args) => ProcessSessionCreateOrDestoryEvent("destroyed");
 
-            var hr = this.debugger.RegisterInternalEventSink(this.eventSink);
+            var hr = _debugger.RegisterInternalEventSink(_eventSink);
             if (hr != VSConstants.S_OK)
                 Marshal.ThrowExceptionForHR(hr);
         }
 
         public IDebugSession2 DebugSession {
-            get { return this.debugger.CurrentSession; }
+            get { return _debugger.CurrentSession; }
         }
 
         private void ProcessSessionCreateOrDestoryEvent(string logSessionAs) {
-            this.logger.WriteLine("Event: Debug session {0}.", logSessionAs);
-            this.DebugSessionChanged(this, EventArgs.Empty);
+            _logger.WriteLine("Event: Debug session {0}.", logSessionAs);
+            DebugSessionChanged(this, EventArgs.Empty);
         }
 
         public void Dispose() {
-            this.debugger.UnregisterInternalEventSink(this.eventSink);
+            _debugger.UnregisterInternalEventSink(_eventSink);
         }
     }
 }

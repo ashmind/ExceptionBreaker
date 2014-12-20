@@ -11,12 +11,12 @@ namespace ExceptionBreaker.Implementation {
         public event EventHandler SessionDestroyed = delegate { };
 
         public int OnSessionCreate(IDebugSession2 pSession) {
-            this.SessionCreated(this, EventArgs.Empty);
+            SessionCreated(this, EventArgs.Empty);
             return VSConstants.S_OK;
         }
 
         public int OnSessionDestroy(IDebugSession2 pSession) {
-            this.SessionDestroyed(this, EventArgs.Empty);
+            SessionDestroyed(this, EventArgs.Empty);
             return VSConstants.S_OK;
         }
 
