@@ -5,7 +5,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 using Microsoft.VisualStudio.Debugger.Interop.Internal;
 
-namespace ExceptionBreaker.Implementation {
+namespace ExceptionBreaker.Core {
     public class DebugSessionEventSink : IDebuggerInternalEvents {
         public event EventHandler SessionCreated = delegate { };
         public event EventHandler SessionDestroyed = delegate { };

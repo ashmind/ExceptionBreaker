@@ -7,12 +7,13 @@ using System.Windows.Forms;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
+using ExceptionBreaker.Core;
 
-namespace ExceptionBreaker.Implementation {
+namespace ExceptionBreaker.Toolbar {
     /// <summary>
     /// Handles state (enabled, visible, checked) and click events for the BreakOnAllCommand.
     /// </summary>
-    public class CommandController : IVsSelectionEvents, IDisposable {
+    public class ToggleBreakOnAllController : IVsSelectionEvents, IDisposable {
         private static readonly HashSet<Guid> RequiredUIContexts = new HashSet<Guid> {
             VSConstants.UICONTEXT.Debugging_guid,
             VSConstants.UICONTEXT.SolutionExists_guid
@@ -29,16 +30,17 @@ namespace ExceptionBreaker.Implementation {
         private readonly HashSet<uint> _requiredUiContextCookies;
         private readonly HashSet<uint> _currentlyActiveUiContextCookies = new HashSet<uint>();
 
-        public CommandController(DTE dte,
-                                 Func<EventHandler, MenuCommand> initBreakOnAllCommand,
-                                 IVsMonitorSelection monitorSelection,
-                                 ExceptionBreakManager breakManager,
-                                 IDiagnosticLogger logger)
-        {
+        public ToggleBreakOnAllController(
+            DTE dte,
+            CommandInitializer commandInitializer,
+            IVsMonitorSelection monitorSelection,
+            ExceptionBreakManager breakManager,
+            IDiagnosticLogger logger
+        ) {
             _monitorSelection = monitorSelection;
             _breakManager = breakManager;
             _logger = logger;
-            _breakOnAllCommand = initBreakOnAllCommand(breakOnAllCommand_Callback);
+            _breakOnAllCommand = commandInitializer.InitializeCommand(breakOnAllCommand_Callback);
 
             _requiredUiContextCookies = new HashSet<uint>(RequiredUIContexts.Select(ConvertToUIContextCookie));
 

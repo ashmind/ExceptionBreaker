@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ExceptionBreaker.Implementation {
+namespace ExceptionBreaker.Core {
     public enum ExceptionBreakState {
         /// <summary>
         /// Either the session was not available yet, or the session does not have any exceptions *set*,

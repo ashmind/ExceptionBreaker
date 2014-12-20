@@ -5,10 +5,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
 using EnvDTE;
-using ExceptionBreaker.Implementation;
-using ExceptionBreaker.Implementation.VersionSpecific;
+using ExceptionBreaker.Core;
+using ExceptionBreaker.Core.VersionSpecific;
 using ExceptionBreaker.Options;
-using ExceptionBreaker.Options.ImprovedComponentModel;
+using ExceptionBreaker.Toolbar;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
 
@@ -33,7 +33,7 @@ namespace ExceptionBreaker
     [ProvideOptionPageInExistingCategory(typeof(OptionsPageData), "Debugger", "ExceptionBreaker", 110)]
     [Guid(GuidList.PackageString)]
     public sealed class ExceptionBreakerPackage : Package {
-        private CommandController _controller;
+        private ToggleBreakOnAllController _toolbarController;
         private DTE _dte;
 
         public IDiagnosticLogger Logger { get; private set; }
@@ -68,7 +68,7 @@ namespace ExceptionBreaker
             SetupExceptionBreakManager();
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
-            SetupCommandController();
+            SetupToolbar();
         }
 
         private void SetupExceptionBreakManager() {
@@ -83,17 +83,16 @@ namespace ExceptionBreaker
             );
         }
 
-        private void SetupCommandController() {
+        private void SetupToolbar() {
             var menuCommandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            Func<EventHandler, MenuCommand> initBreakOnAllCommand = callback => {
-                var command = new OleMenuCommand(id: CommandIDs.BreakOn, invokeHandler: callback);
-                menuCommandService.AddCommand(command);
-
-                return command;
-            };
-
-            var monitorSelection = (IVsMonitorSelection)this.GetService(typeof(IVsMonitorSelection));
-            _controller = new CommandController(_dte, initBreakOnAllCommand, monitorSelection, ExceptionBreakManager, Logger);
+            var monitorSelection = (IVsMonitorSelection)GetService(typeof(IVsMonitorSelection));
+            _toolbarController = new ToggleBreakOnAllController(
+                _dte,
+                new CommandInitializer(CommandIDs.ToggleBreakOnAll, menuCommandService),
+                monitorSelection,
+                ExceptionBreakManager,
+                Logger
+            );
         }
     }
 }

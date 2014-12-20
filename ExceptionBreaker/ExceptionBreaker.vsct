@@ -20,8 +20,8 @@
     </Groups>
 
     <Buttons>
-      <Button guid="guidCommandSet" id="cmdidBreakOnAll" priority="0x0100" type="Button">
-        <Icon guid="guidCommandImages" id="imgBreakOnAll" />
+      <Button guid="guidCommandSet" id="cmdidToggleBreakOnAll" priority="0x0100" type="Button">
+        <Icon guid="guidCommandImages" id="imgToggleBreakOnAll" />
 
         <!-- This applies to toolbar item (menu item is invisible anyway): -->
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -45,18 +45,18 @@
   </Commands>
 
   <CommandPlacements>    
-    <CommandPlacement guid="guidCommandSet" id="cmdidBreakOnAll" priority="0x1">
+    <CommandPlacement guid="guidCommandSet" id="cmdidToggleBreakOnAll" priority="0x1">
       <Parent guid="guidCommandSet" id="ToolbarGroup" />
     </CommandPlacement>
 
     <!-- Debug menu, just beneath Exceptions: -->
-    <CommandPlacement guid="guidCommandSet" id="cmdidBreakOnAll" priority="0x0F01">
+    <CommandPlacement guid="guidCommandSet" id="cmdidToggleBreakOnAll" priority="0x0F01">
       <Parent guid="guidVSDebugGroup" id="IDG_EXECUTION" />
     </CommandPlacement>
   </CommandPlacements>
 
   <KeyBindings>
-    <KeyBinding mod1="Control" key1="E" mod2="Control" key2="B" guid="guidCommandSet" id="cmdidBreakOnAll" editor="guidVSStd97" />
+    <KeyBinding mod1="Control" key1="E" mod2="Control" key2="B" guid="guidCommandSet" id="cmdidToggleBreakOnAll" editor="guidVSStd97" />
   </KeyBindings>
   
   <Symbols>
@@ -64,7 +64,7 @@
     
     <GuidSymbol name="guidCommandSet" value="{9d55da8f-2be1-44dc-a94a-08154f98f634}">
       <IDSymbol name="ToolbarGroup" value="0x1020" />
-      <IDSymbol name="cmdidBreakOnAll" value="0x0100" />
+      <IDSymbol name="cmdidToggleBreakOnAll" value="0x0100" />
     </GuidSymbol>
   </Symbols>
 </CommandTable>

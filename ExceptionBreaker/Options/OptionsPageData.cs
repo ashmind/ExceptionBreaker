@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text.RegularExpressions;
 using System.Windows;
 using AshMind.Extensions;
-using ExceptionBreaker.Implementation;
+using ExceptionBreaker.Core;
 using ExceptionBreaker.Options.ImprovedComponentModel;
 using ExceptionBreaker.Options.Support;
 using Microsoft.Forums.WpfDialogPageIntegration;
-using Microsoft.VisualStudio.Shell;
 
 namespace ExceptionBreaker.Options {
     public class OptionsPageData : UIElementDialogPage {

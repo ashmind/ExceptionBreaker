@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 
-namespace ExceptionBreaker.Implementation {
+namespace ExceptionBreaker.Core {
     /// <summary>
     /// Manages current break state and applies state changes to <see cref="IDebugSession2" />.
     /// </summary>

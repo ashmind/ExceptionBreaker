@@ -4,7 +4,7 @@ using System.Linq;
 using EnvDTE;
 using Microsoft.VisualStudio.Debugger.Interop.Internal;
 
-namespace ExceptionBreaker.Implementation.VersionSpecific {
+namespace ExceptionBreaker.Core.VersionSpecific {
     public class VersionSpecificAdapterFactory {
         private readonly Version _version;
 

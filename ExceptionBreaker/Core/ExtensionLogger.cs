@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace ExceptionBreaker.Implementation {
+namespace ExceptionBreaker.Core {
     public class ExtensionLogger : IDiagnosticLogger {
         private readonly IVsOutputWindowPane _outputPane;
         private readonly string _traceCategory;

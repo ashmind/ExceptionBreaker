@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.Debugger.Interop;
 
-namespace ExceptionBreaker.Implementation.VersionSpecific {
+namespace ExceptionBreaker.Core.VersionSpecific {
     public interface IDebuggerInternalAdapter {
         IDebugSession3 CurrentSession { get; }
         int RegisterInternalEventSink(DebugSessionEventSink eventSink);

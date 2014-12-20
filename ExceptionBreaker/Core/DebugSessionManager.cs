@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using ExceptionBreaker.Implementation.VersionSpecific;
+using ExceptionBreaker.Core.VersionSpecific;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 
-namespace ExceptionBreaker.Implementation {
+namespace ExceptionBreaker.Core {
     /// <summary>
     /// Monitors debug session create/destroy events and maintains session between them.
     /// </summary>

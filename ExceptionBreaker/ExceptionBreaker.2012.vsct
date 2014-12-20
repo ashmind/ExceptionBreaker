@@ -4,13 +4,13 @@
   
   <Commands package="guidPackage">   
     <Bitmaps>
-      <Bitmap guid="guidCommandImages" href="Resources\Commands.VS2012.png" usedList="imgBreakOnAll" />
+      <Bitmap guid="guidCommandImages" href="Resources\Commands.VS2012.png" usedList="imgToggleBreakOnAll" />
     </Bitmaps>
   </Commands>
   
   <Symbols>
     <GuidSymbol name="guidCommandImages" value="{459584a6-be3c-4039-8a84-17a914ee70da}">
-      <IDSymbol name="imgBreakOnAll" value="1" />
+      <IDSymbol name="imgToggleBreakOnAll" value="1" />
     </GuidSymbol>
   </Symbols>
 </CommandTable>
