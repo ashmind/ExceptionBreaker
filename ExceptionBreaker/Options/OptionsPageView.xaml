@@ -146,7 +146,7 @@
 
         <ItemsControl.ItemTemplate>
           <DataTemplate>
-            <TextBlock Text="{Binding Path=(options:ExceptionViewModel.Name)}">
+            <TextBlock Text="{Binding Path=(options:ExceptionViewModel.Name)}" Margin="0 0 0 4">
               <TextBlock.Style>
                 <Style TargetType="{x:Type TextBlock}">
                   <Style.Triggers>
