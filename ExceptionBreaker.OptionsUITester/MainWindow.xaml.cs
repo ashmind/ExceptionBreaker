@@ -13,7 +13,7 @@ namespace ExceptionBreaker.OptionsUITester {
             InitializeComponent();
             view.Model = new OptionsViewModel(
                 new OptionsPageData(),
-                new ObservableValue<IEnumerable<string>>(new[] {
+                new ObservableValue<IEnumerable<string>>(new string[] {
                     "System.Exception",
                     "System.ArgumentException",
                     "System.NullReferenceException",

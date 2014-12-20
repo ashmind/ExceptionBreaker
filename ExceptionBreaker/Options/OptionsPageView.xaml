@@ -21,7 +21,8 @@
     </Grid.RowDefinitions>
 
     <TextBlock Padding="5" Background="#fff6c4">
-      This is a new feature. Please don't expect it to be perfect and report any issues.
+      This is a new feature, so it might not be perfectly reliable. Please
+      <Hyperlink Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrush}}" NavigateUri="https://github.com/ashmind/ExceptionBreaker/issues">report any issues</Hyperlink>.
     </TextBlock>
 
     <DockPanel Grid.Row="1" DockPanel.Dock="Top" LastChildFill="True" DataContext="{Binding Path=(options:OptionsViewModel.IgnoredPatterns)}">
@@ -55,7 +56,7 @@
               Margin="5 5 0 5">
         <Image Source="../Resources/Add.png" />
       </Button>
-      <Label>Do not toggle exceptions matching:</Label>
+      <Label>Do not change break settings for exceptions matching (regex):</Label>
     </DockPanel>
     <ListBox Grid.Row="2" ItemsSource="{Binding Path=(options:PatternCollectionViewModel.Values)}" SelectedItem="{Binding Path=(options:PatternCollectionViewModel.Selected).Value}" DataContext="{Binding Path=(options:OptionsViewModel.IgnoredPatterns)}">
       <ListBox.Resources>
@@ -105,9 +106,31 @@
       </ListBox.ItemTemplate>
     </ListBox>
 
-    <TextBlock Grid.Row="3" Margin="5">Preview:</TextBlock>
+    <TextBlock Grid.Row="3" Margin="5">Matching exceptions (preview, might not represent the full list):</TextBlock>
     <ScrollViewer Grid.Row="4" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" Margin="10 0 0 0">
       <ItemsControl  Background="Transparent" ItemsSource="{Binding Path=(options:OptionsViewModel.ExceptionsMatchingIgnored)}">       
+        <ItemsControl.Resources>
+          <ControlTemplate x:Key="NotAvailableTemplate">
+            <TextBlock>Preview is not available. This might happen if there is no open solution.</TextBlock>
+          </ControlTemplate>
+          <ControlTemplate x:Key="NoMatchesTemplate">
+            <TextBlock>No exceptions match any of the above patterns.</TextBlock>
+          </ControlTemplate>
+        </ItemsControl.Resources>
+
+        <ItemsControl.Style>
+          <Style TargetType="{x:Type ItemsControl}">
+            <Style.Triggers>
+              <DataTrigger Value="0" Binding="{Binding (ItemsControl.Items).Count, RelativeSource={RelativeSource Self}}">
+                <Setter Property="Template" Value="{StaticResource NoMatchesTemplate}" />
+              </DataTrigger>
+              <DataTrigger Value="0" Binding="{Binding (options:OptionsViewModel.AllExceptions).Value.Count}">
+                <Setter Property="Template" Value="{StaticResource NotAvailableTemplate}" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </ItemsControl.Style>
+
         <ItemsControl.ItemTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding Path=(options:ExceptionViewModel.Name)}">

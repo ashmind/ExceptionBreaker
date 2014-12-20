@@ -176,7 +176,6 @@
     <Compile Include="Options\Support\BindingDelayExtension.cs" />
     <Compile Include="Options\Support\CollectionSyncExtensions.cs" />
     <Compile Include="Options\ImprovedComponentModel\CustomPropertyDescriptor.cs" />
-    <Compile Include="Options\Support\DelayableBinding.cs" />
     <Compile Include="Options\Support\ProperListPropertyDescriptor.cs" />
     <Compile Include="Options\Support\ObservableCollectionExtensions.cs" />
     <Compile Include="Options\Support\IObservableResult.cs" />
