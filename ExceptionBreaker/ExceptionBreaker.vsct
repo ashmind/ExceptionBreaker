@@ -35,10 +35,10 @@
           <!-- Used by Commands window: -->
           <LocCanonicalName>Exceptions.CLR.ToggleBreak</LocCanonicalName>
           <!-- Used by menu: -->
-          <MenuText>Break on All CLR Exceptions</MenuText>
+          <MenuText>Break on CLR Exceptions</MenuText>
           <!-- Used by toolbar: -->
-          <ButtonText>Break on All CLR Exceptions</ButtonText>
-          <ToolTipText>Break on all CLR exceptions.</ToolTipText>
+          <ButtonText>Break on CLR Exceptions</ButtonText>
+          <ToolTipText>Break on CLR exceptions.</ToolTipText>
         </Strings>
       </Button>
     </Buttons>
