@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+﻿using System;
 using ExceptionBreaker.Options.Support;
 
 namespace ExceptionBreaker.Options {
@@ -6,14 +6,18 @@ namespace ExceptionBreaker.Options {
         public ExceptionViewModel(string name, ObservableValue<PatternViewModel> selected) {
             Name = name;
             MatchesSelected = selected.GetObservable(
-                s => s != null && !s.IsEmpty.Value && s.ToRegex().IsMatch(name),
+                s => s != null && !s.IsEmpty.Value && s.Data.Matches(name),
                 (newItem, oldItem, changed) => {
-                    var handler = (PropertyChangedEventHandler) delegate { changed(); };
-                    if (oldItem != null)
-                        oldItem.Value.PropertyChanged -= handler;
+                    var handler = (EventHandler)delegate { changed(); };
+                    if (oldItem != null) {
+                        oldItem.Pattern.ValueChanged -= handler;
+                        oldItem.Enabled.ValueChanged -= handler;
+                    }
 
-                    if (newItem != null)
-                        newItem.Value.PropertyChanged += handler;
+                    if (newItem != null) {
+                        newItem.Pattern.ValueChanged += handler;
+                        newItem.Enabled.ValueChanged += handler;
+                    }
                 }
             );
         }

@@ -12,7 +12,9 @@ namespace ExceptionBreaker.Tests.Unit {
     public class OptionsPageDataTests {
         [Fact]
         public void XmlSettings_CanBeReloaded() {
-            var data = new OptionsPageData {Ignored = {new Regex("test")}};
+            var data = new OptionsPageData {
+                Ignored = { new PatternData(new Regex("test")) }
+            };
 
             var settings = new Dictionary<string, string>();
             var writer = MockDictionarySettingsWriter(settings);
@@ -23,8 +25,8 @@ namespace ExceptionBreaker.Tests.Unit {
             reloaded.LoadSettingsFromXml(reader.Object);
 
             Assert.Equal(
-                data.Ignored.Select(r => r.ToString()),
-                reloaded.Ignored.Select(r => r.ToString())
+                data.Ignored.Select(p => new { Regex = p.Regex.ToString(), p.Enabled }),
+                reloaded.Ignored.Select(p => new { Regex = p.Regex.ToString(), p.Enabled })
             );
         }
 

@@ -8,6 +8,7 @@ using ExceptionBreaker.Implementation;
 using ExceptionBreaker.Options.ImprovedComponentModel;
 using ExceptionBreaker.Options.Support;
 using Microsoft.Forums.WpfDialogPageIntegration;
+using Microsoft.VisualStudio.Shell;
 
 namespace ExceptionBreaker.Options {
     public class OptionsPageData : UIElementDialogPage {
@@ -26,13 +27,13 @@ namespace ExceptionBreaker.Options {
         public OptionsPageData(Lazy<IExceptionListProvider> exceptionListProvider, Lazy<IDiagnosticLogger> logger) {
             _exceptionListProvider = exceptionListProvider;
             _logger = logger;
-            Ignored = new List<Regex>();
+            Ignored = new List<PatternData>();
         }
         
-        [TypeConverter(typeof(RegexListTypeConverter))]
+        [TypeConverter(typeof(FailSafeJsonTypeConverter))]
         [PropertyDescriptor(typeof(ProperListPropertyDescriptor))]
-        public IList<Regex> Ignored { get; private set; }
-        
+        public IList<PatternData> Ignored { get; private set; }
+
         protected override UIElement Child {
             get { return CreateChild(); }
         }

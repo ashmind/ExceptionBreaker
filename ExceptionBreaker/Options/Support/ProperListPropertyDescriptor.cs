@@ -18,6 +18,9 @@ namespace ExceptionBreaker.Options.Support {
             var newList = (IEnumerable)value;
 
             list.Clear();
+            if (newList == null)
+                return;
+
             foreach (var item in newList) {
                 list.Add(item);
             }

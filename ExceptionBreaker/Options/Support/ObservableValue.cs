@@ -4,7 +4,8 @@ using System.ComponentModel;
 namespace ExceptionBreaker.Options.Support {
     public class ObservableValue<T> : IObservableResult<T> {
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
-        private static readonly PropertyChangedEventArgs EventArgs = new PropertyChangedEventArgs("Value");
+        public event EventHandler ValueChanged = delegate { };
+        private static readonly PropertyChangedEventArgs PropertyChangedEventArgs = new PropertyChangedEventArgs("Value");
 
         private T _value;
 
@@ -22,7 +23,8 @@ namespace ExceptionBreaker.Options.Support {
                     return;
 
                 _value = value;
-                PropertyChanged(this, EventArgs);
+                PropertyChanged(this, PropertyChangedEventArgs);
+                ValueChanged(this, EventArgs.Empty);
             }
         }
 

@@ -87,13 +87,26 @@
         <DataTemplate>
           <Border Padding="2" Margin="1" Background="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}">
             <DockPanel LastChildFill="True" FocusManager.FocusedElement="{Binding ElementName=text}">
-              <CheckBox DockPanel.Dock="Left" VerticalAlignment="Center" Margin="0 0 2 0" />
+              <CheckBox IsChecked="{Binding Path=(options:PatternViewModel.Enabled).Value}"
+                        DockPanel.Dock="Left"
+                        VerticalAlignment="Center"
+                        Margin="0 0 2 0" />
               <TextBox x:Name="text"
                        VerticalAlignment="Center"
                        GotFocus="textPattern_OnGotFocus"
                        support:BindingDelay.List="{support:BindingDelay Property=TextBox.Text, Delay=500}">
+                <TextBox.Style>
+                  <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding Path=(options:PatternViewModel.Enabled).Value}" Value="False">
+                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </TextBox.Style>
+                
                 <TextBox.Text>
-                  <Binding Path="(options:PatternViewModel.Value).Value" UpdateSourceTrigger="Explicit">
+                  <Binding Path="(options:PatternViewModel.Pattern).Value" UpdateSourceTrigger="Explicit">
                     <Binding.ValidationRules>
                       <StaticResource ResourceKey="regexValidation" />
                     </Binding.ValidationRules>

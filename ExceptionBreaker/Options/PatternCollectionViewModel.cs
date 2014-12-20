@@ -2,37 +2,45 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Text.RegularExpressions;
 using System.Linq;
 using AshMind.Extensions;
 using ExceptionBreaker.Options.Support;
 
 namespace ExceptionBreaker.Options {
     public class PatternCollectionViewModel {
-        public PatternCollectionViewModel(ICollection<Regex> data) {
-            Values = new ObservableCollection<PatternViewModel>(data.Select(r => new PatternViewModel(r)));
-            Values.CollectionChanged += (sender, e) => UpdateData(data);
-            var valuesChangedHandler = (PropertyChangedEventHandler)((_, __) => UpdateData(data));
-            Values.AddHandlers(
-                added => added.Value.PropertyChanged += valuesChangedHandler,
-                removed => removed.Value.PropertyChanged -= valuesChangedHandler
-            );
+        private readonly ICollection<PatternData> _data;
+
+        public PatternCollectionViewModel(ICollection<PatternData> data) {
+            Argument.NotNull("data", data);
+            _data = data;
+
+            Values = new ObservableCollection<PatternViewModel>(data.Select(d => new PatternViewModel(d)));
+            SetupValues();
 
             Selected = new ObservableValue<PatternViewModel>();
 
             CanAdd = Values.GetObservable(c => c.All(v => !v.IsEmpty.Value), (c, e, changed) => {
-                var handler = (PropertyChangedEventHandler)delegate { changed(); };
+                var handler = (EventHandler)delegate { changed(); };
                 e.ProcessChanges<PatternViewModel>(
-                    newItem => newItem.IsEmpty.PropertyChanged += handler,
-                    oldItem => oldItem.IsEmpty.PropertyChanged -= handler
+                    newItem => newItem.IsEmpty.ValueChanged += handler,
+                    oldItem => oldItem.IsEmpty.ValueChanged -= handler
                 );
             });
             CanDelete = Selected.GetObservable(v => v != null);
         }
 
-        private void UpdateData(ICollection<Regex> data) {
-            data.Clear();
-            data.AddRange(Values.Where(m => !m.IsEmpty.Value).Select(m => m.ToRegex()));
+        private void SetupValues() {
+            Values.CollectionChanged += (sender, e) => UpdateData();
+            var valuesChangedHandler = (EventHandler)delegate { UpdateData(); };
+            Values.AddHandlers(
+                added => added.IsEmpty.ValueChanged += valuesChangedHandler,
+                removed => removed.IsEmpty.ValueChanged -= valuesChangedHandler
+            );
+        }
+
+        private void UpdateData() {
+            _data.Clear();
+            _data.AddRange(Values.Where(v => !v.IsEmpty.Value).Select(v => v.Data));
         }
 
         public ObservableCollection<PatternViewModel> Values { get; private set; }
@@ -41,7 +49,7 @@ namespace ExceptionBreaker.Options {
         public ObservableValue<PatternViewModel> Selected { get; private set; }
 
         public void AddNew() {
-            Values.Add(new PatternViewModel());
+            Values.Add(new PatternViewModel(""));
         }
 
         public void DeleteSelected() {

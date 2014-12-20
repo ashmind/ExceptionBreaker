@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Argument">
+      <HintPath>..\#packages\Argument.1.0.3\lib\net45\Argument.dll</HintPath>
+    </Reference>
     <Reference Include="AshMind.Extensions, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\#packages\AshMind.Extensions.1.6.0\lib\net45\AshMind.Extensions.dll</HintPath>
@@ -68,6 +71,8 @@
     <Compile Include="CollectionSyncExtensionsTests.cs" />
     <Compile Include="MoqExtensions.cs" />
     <Compile Include="OptionsPageDataTests.cs" />
+    <Compile Include="PatternCollectionViewModelTests.cs" />
+    <Compile Include="PatternViewModelTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

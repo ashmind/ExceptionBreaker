@@ -20,20 +20,26 @@ namespace ExceptionBreaker.Options {
             _exceptionsMatchingIgnored = new ObservableCollection<ExceptionViewModel>();
             ExceptionsMatchingIgnored = new ReadOnlyObservableCollection<ExceptionViewModel>(_exceptionsMatchingIgnored);
 
-            AllExceptions.PropertyChanged += (sender, e) => RecalculateExceptionsMatchingIgnored();
+            AllExceptions.ValueChanged += (sender, e) => RecalculateExceptionsMatchingIgnored();
             
             IgnoredPatterns.Values.CollectionChanged += (sender, e) => RecalculateExceptionsMatchingIgnored();
-            var ignoredChangeHandler = (PropertyChangedEventHandler)((_, __) => RecalculateExceptionsMatchingIgnored());
+            var ignoredChangeHandler = (EventHandler) delegate { RecalculateExceptionsMatchingIgnored(); };
             IgnoredPatterns.Values.AddHandlers(
-                added => added.Value.PropertyChanged += ignoredChangeHandler,
-                removed => removed.Value.PropertyChanged -= ignoredChangeHandler
+                added => {
+                    added.Pattern.ValueChanged += ignoredChangeHandler;
+                    added.Enabled.ValueChanged += ignoredChangeHandler;
+                },
+                removed => {
+                    removed.Pattern.ValueChanged -= ignoredChangeHandler;
+                    removed.Enabled.ValueChanged -= ignoredChangeHandler;
+                }
             );
 
             RecalculateExceptionsMatchingIgnored();
         }
 
         private void RecalculateExceptionsMatchingIgnored() {
-            AllExceptions.Value.SyncToWhere(_exceptionsMatchingIgnored, e => _data.Ignored.Any(r => r.IsMatch(e.Name)));
+            AllExceptions.Value.SyncToWhere(_exceptionsMatchingIgnored, e => _data.Ignored.Any(p => p.Matches(e.Name)));
         }
 
         public PatternCollectionViewModel IgnoredPatterns { get; private set; }

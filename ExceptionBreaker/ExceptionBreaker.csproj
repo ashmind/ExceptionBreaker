@@ -49,6 +49,9 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Argument">
+      <HintPath>..\#packages\Argument.1.0.3\lib\net20\Argument.dll</HintPath>
+    </Reference>
     <Reference Include="AshMind.Extensions, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\#packages\AshMind.Extensions.1.6.0\lib\net40\AshMind.Extensions.dll</HintPath>
@@ -71,6 +74,9 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\#packages\Newtonsoft.Json.6.0.6\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -171,6 +177,7 @@
     <Compile Include="Implementation\VersionSpecific\IDebuggerInternalAdapter.cs" />
     <Compile Include="Implementation\VersionSpecific\VersionSpecificAdapterFactory.cs" />
     <Compile Include="Options\ExceptionViewModel.cs" />
+    <Compile Include="Options\PatternData.cs" />
     <Compile Include="Options\RegexValidationRule.cs" />
     <Compile Include="Options\Support\BindingDelay.cs" />
     <Compile Include="Options\Support\BindingDelayExtension.cs" />
@@ -192,7 +199,7 @@
     <Compile Include="Options\PatternCollectionViewModel.cs" />
     <Compile Include="Options\PatternViewModel.cs" />
     <Compile Include="Options\ProvideOptionPageInExistingCategoryAttribute.cs" />
-    <Compile Include="Options\RegexListTypeConverter.cs" />
+    <Compile Include="Options\FailSafeJsonTypeConverter.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ExceptionBreakerPackage.cs" />
     <Compile Include="Options\ImprovedComponentModel\PropertyDescriptorAttribute.cs" />

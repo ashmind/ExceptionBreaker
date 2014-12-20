@@ -78,7 +78,7 @@ namespace ExceptionBreaker
             var optionsPage = new Lazy<OptionsPageData>(() => (OptionsPageData)GetDialogPage(typeof (OptionsPageData)));
             ExceptionBreakManager = new ExceptionBreakManager(
                 sessionManager,
-                name => optionsPage.Value.Ignored.Any(r => r.IsMatch(name)),
+                name => optionsPage.Value.Ignored.Any(p => p.Matches(name)),
                 Logger
             );
         }
