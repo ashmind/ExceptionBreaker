@@ -47,7 +47,7 @@ namespace ExceptionBreaker.Options {
             };
 
             return new OptionsPageView {
-                Model = new OptionsViewModel(this, exceptionNamesObservable)
+                ViewModel = new OptionsViewModel(this, exceptionNamesObservable)
             };
         }
     }

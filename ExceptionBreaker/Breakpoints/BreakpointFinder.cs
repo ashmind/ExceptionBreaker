@@ -12,6 +12,10 @@ namespace ExceptionBreaker.Breakpoints {
             _dte = dte;
         }
 
+        public IEnumerable<Breakpoint2> GetAllBreakpoints() {
+            return _dte.Debugger.Breakpoints.Cast<Breakpoint2>();
+        }
+
         public Breakpoint2 GetBreakpointForCommand() {
             var path = _dte.ActiveDocument.FullName;
             var line = ((TextSelection)_dte.ActiveDocument.Selection).CurrentLine;

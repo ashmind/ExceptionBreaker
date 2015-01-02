@@ -11,7 +11,7 @@ namespace ExceptionBreaker.OptionsUITester {
     public partial class MainWindow : Window {
         public MainWindow() {
             InitializeComponent();
-            view.Model = new OptionsViewModel(
+            view.ViewModel = new OptionsViewModel(
                 new OptionsPageData(),
                 new ObservableValue<IEnumerable<string>>(new string[] {
                     "System.Exception",

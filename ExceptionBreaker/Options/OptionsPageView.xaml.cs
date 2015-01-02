@@ -14,7 +14,7 @@ namespace ExceptionBreaker.Options {
             InitializeComponent();
         }
         
-        public OptionsViewModel Model {
+        public OptionsViewModel ViewModel {
             get { return (OptionsViewModel)DataContext; }
             set { DataContext = value; }
         }
@@ -25,11 +25,11 @@ namespace ExceptionBreaker.Options {
         }
 
         private void buttonAdd_Click(object sender, RoutedEventArgs e) {
-            Model.IgnoredPatterns.AddNew();
+            ViewModel.IgnoredPatterns.AddNew();
         }
 
         private void buttonDelete_Click(object sender, RoutedEventArgs e) {
-            Model.IgnoredPatterns.DeleteSelected();
+            ViewModel.IgnoredPatterns.DeleteSelected();
         }
     }
 }

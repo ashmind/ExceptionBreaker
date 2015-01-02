@@ -14,7 +14,7 @@ namespace ExceptionBreaker.Core {
         public static void Release(object comObject) {
             if (comObject == null)
                 return;
-
+            
             Marshal.ReleaseComObject(comObject);
         }
     }

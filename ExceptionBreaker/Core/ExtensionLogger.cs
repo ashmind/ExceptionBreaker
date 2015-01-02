@@ -25,5 +25,9 @@ namespace ExceptionBreaker.Core {
         public void WriteLine(string format, object arg1) {
             WriteLine(string.Format(format, arg1));
         }
+
+        public void WriteLine(string format, object arg1, object arg2) {
+            WriteLine(string.Format(format, arg1, arg2));
+        }
     }
 }

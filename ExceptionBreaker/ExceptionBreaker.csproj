@@ -158,13 +158,15 @@
     <Compile Include="Breakpoints\BreakpointFinder.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Breakpoints\BreakpointExtraData.cs" />
+    <Compile Include="Breakpoints\BreakpointKeyProvider.cs" />
     <Compile Include="Breakpoints\BreakpointSetupExceptionsController.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Breakpoints\ExceptionBreakChange.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Breakpoints\ExceptionBreakChangeStore.cs">
+    <Compile Include="Breakpoints\BreakpointExtraDataProvider.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ComImports\BREAKPOINT_EDIT_OPERATION.cs" />
@@ -185,6 +187,7 @@
     <Compile Include="Core\DebugSessionEventSink.cs" />
     <Compile Include="Core\ExceptionBreakState.cs" />
     <Compile Include="Core\DebugSessionManager.cs" />
+    <Compile Include="Core\ISolutionDataPersister.cs" />
     <Compile Include="Core\VSInteropSafeExtensions.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

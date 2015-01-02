@@ -7,5 +7,7 @@ namespace ExceptionBreaker.Core {
         void WriteLine(string format, params object[] args);
         [StringFormatMethod("format")]
         void WriteLine(string format, object arg1);
+        [StringFormatMethod("format")]
+        void WriteLine(string format, object arg1, object arg2);
     }
 }

@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
@@ -12,19 +15,10 @@ using ExceptionBreaker.Options;
 using ExceptionBreaker.Toolbar;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
-namespace ExceptionBreaker
-{
-    /// <summary>
-    /// This is the class that implements the package exposed by this assembly.
-    ///
-    /// The minimum requirement for a class to be considered a valid package for Visual Studio
-    /// is to implement the IVsPackage interface and register itself with the shell.
-    /// This package uses the helper classes defined inside the Managed Package Framework (MPF)
-    /// to do it: it derives from the Package class that provides the implementation of the 
-    /// IVsPackage interface and uses the registration attributes defined in the framework to 
-    /// register itself and its components with the shell.
-    /// </summary>
+namespace ExceptionBreaker {
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     [ProvideAutoLoad(UIContextGuids80.NoSolution)]
@@ -35,9 +29,13 @@ namespace ExceptionBreaker
     [Guid(GuidList.PackageString)]
     public sealed class ExceptionBreakerPackage : Package {
         private DTE _dte;
+        // ReSharper disable NotAccessedField.Local
         private ToggleBreakOnAllController _toolbarController;
         private BreakpointSetupExceptionsController _breakpointController;
         private BreakpointEventProcessor _breakpointEventProcessor;
+        // ReSharper restore NotAccessedField.Local
+
+        private readonly SolutionDataPersisterCollection _solutionDataPersisters = new SolutionDataPersisterCollection();
 
         public IDiagnosticLogger Logger { get; private set; }
         public ExceptionBreakManager ExceptionBreakManager { get; private set; }
@@ -51,8 +49,7 @@ namespace ExceptionBreaker
         /// not sited yet inside Visual Studio environment. The place to do all the other 
         /// initialization is the Initialize method.
         /// </summary>
-        public ExceptionBreakerPackage()
-        {
+        public ExceptionBreakerPackage() {
             Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this));
             Current = this;
         }
@@ -61,8 +58,7 @@ namespace ExceptionBreaker
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
         /// </summary>
-        protected override void Initialize()
-        {
+        protected override void Initialize() {
             Trace.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this));
             base.Initialize();
             Logger = new ExtensionLogger("ExceptionBreaker", paneCaption => GetOutputPane(GuidList.OutputPane, paneCaption));
@@ -72,6 +68,10 @@ namespace ExceptionBreaker
 
             SetupToolbar();
             SetupBreakpoints();
+
+            foreach (var persister in _solutionDataPersisters) {
+                AddOptionKey(persister.Key);
+            }
         }
 
         private void SetupCoreManager() {
@@ -101,18 +101,50 @@ namespace ExceptionBreaker
         private void SetupBreakpoints() {
             var menuCommandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             var debugger = GetDebugger();
-            var store = new ExceptionBreakChangeStore(Logger);
-            _breakpointEventProcessor = new BreakpointEventProcessor(debugger, store, ExceptionBreakManager, Logger);
+
+            var jsonSerializer = new JsonSerializer {
+                Formatting = Formatting.None,
+                Converters = { new StringEnumConverter() }
+            };
+            var finder = new BreakpointFinder(_dte);
+            var extraDataProvider = new BreakpointExtraDataProvider(new BreakpointKeyProvider(), finder, jsonSerializer, Logger);
+            _solutionDataPersisters.Add(extraDataProvider);
+
+            _breakpointEventProcessor = new BreakpointEventProcessor(debugger, extraDataProvider, ExceptionBreakManager, Logger);
             _breakpointController = new BreakpointSetupExceptionsController(
                 new CommandInitializer(CommandIDs.BreakpointToggleExceptions, menuCommandService),
-                new BreakpointFinder(_dte),
-                store,
-                Logger
+                finder, extraDataProvider, Logger
             );
         }
 
         private static IVsDebugger GetDebugger() {
             return (IVsDebugger)GetGlobalService(typeof(SVsShellDebugger));
         }
+
+        protected override void OnLoadOptions(string key, Stream stream) {
+            try {
+                _solutionDataPersisters[key].LoadFrom(stream);
+            }
+            catch (Exception ex) {
+                Logger.WriteLine("Exception while loading solution data for '{0}': {1}", key, ex);
+            }
+        }
+
+        protected override void OnSaveOptions(string key, Stream stream) {
+            try {
+                _solutionDataPersisters[key].SaveTo(stream);
+            }
+            catch (Exception ex) {
+                Logger.WriteLine("Exception while saving solution data for '{0}': {1}", key, ex);
+            }
+        }
+
+        #region SolutionDataPersisterCollection class
+        private class SolutionDataPersisterCollection : KeyedCollection<string, ISolutionDataPersister> {
+            protected override string GetKeyForItem(ISolutionDataPersister item) {
+                return item.Key;
+            }
+        }
+        #endregion
     }
 }

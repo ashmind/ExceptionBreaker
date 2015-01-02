@@ -7,7 +7,7 @@ namespace ExceptionTest
     public static class Program
     {
         public static void Main(string[] args) {
-            if (args.Length == 0 || args[0] != "noloop")
+           if (args.Length == 0 || args[0] != "noloop")
                 StandaloneExceptionLoop();
 
             FirstChanceException();

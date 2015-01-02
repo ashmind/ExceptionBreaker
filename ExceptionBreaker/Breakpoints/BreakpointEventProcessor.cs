@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using ExceptionBreaker.Core;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
@@ -10,13 +9,13 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace ExceptionBreaker.Breakpoints {
     public class BreakpointEventProcessor : IDebugEventCallback2, IDisposable {
         private readonly IVsDebugger _debugger;
-        private readonly ExceptionBreakChangeStore _store;
+        private readonly BreakpointExtraDataProvider _extraDataProvider;
         private readonly ExceptionBreakManager _breakManager;
         private readonly IDiagnosticLogger _logger;
 
-        public BreakpointEventProcessor(IVsDebugger debugger, ExceptionBreakChangeStore store, ExceptionBreakManager breakManager, IDiagnosticLogger logger) {
+        public BreakpointEventProcessor(IVsDebugger debugger, BreakpointExtraDataProvider extraDataProvider, ExceptionBreakManager breakManager, IDiagnosticLogger logger) {
             _debugger = debugger;
-            _store = store;
+            _extraDataProvider = extraDataProvider;
             _breakManager = breakManager;
             _logger = logger;
 
@@ -28,7 +27,7 @@ namespace ExceptionBreaker.Breakpoints {
                 ProcessEvent(pEvent);
             }
             catch (Exception ex) {
-                _logger.WriteLine("Unexpected exception: " + ex);
+                _logger.WriteLine("Unexpected exception: {0}", ex);
             }
             finally {
                 VSInteropHelper.Release(pEngine);
@@ -47,8 +46,15 @@ namespace ExceptionBreaker.Breakpoints {
 
             _logger.WriteLine("Event: Breakpoint reached.");
             foreach (var breakpoint in breakpointEvent.GetBreakpointsAsArraySafe()) {
-                var change = _store.GetChange(breakpoint);
-                _logger.WriteLine("Change is.... {0}", change);
+                var extraData = _extraDataProvider.GetData(breakpoint);
+                if (extraData == null || extraData.ExceptionBreakChange == ExceptionBreakChange.NoChange)
+                    continue;
+
+                var change = extraData.ExceptionBreakChange;
+                _logger.WriteLine("Breakpoint requires exception state change: {0}.", change);
+                _breakManager.CurrentState = change == ExceptionBreakChange.SetBreakOnAll
+                                           ? ExceptionBreakState.BreakOnAll
+                                           : ExceptionBreakState.BreakOnNone;
             }
         }
 
