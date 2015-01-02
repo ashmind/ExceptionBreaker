@@ -5,7 +5,7 @@ using System.Linq;
 using ExceptionBreaker.Options;
 using Xunit;
 
-namespace ExceptionBreaker.Tests.Unit {
+namespace ExceptionBreaker.Tests.Unit.Options {
     public class PatternCollectionViewModelTests {
         [Fact]
         public void Add_AddsItemToData_IfPatternIsSet() {

@@ -134,10 +134,7 @@ namespace ExceptionBreaker.Core {
         /// The exceptions will not have a specific state set.
         /// </summary>
         private EXCEPTION_INFO[] GetDefaultExceptions(EXCEPTION_INFO? parent = null) {
-            IEnumDebugExceptionInfo2 enumerator;
-            var hr = Session.EnumDefaultExceptions(parent != null ? new[] { parent.Value } : null, out enumerator);
-
-            return GetExceptionsFromEnumerator(hr, enumerator);
+            return Session.GetDefaultExceptionsAsArraySafe(parent != null ? new[] {parent.Value} : null);
         }
 
         /// <summary>
@@ -146,35 +143,7 @@ namespace ExceptionBreaker.Core {
         /// </summary>
         private EXCEPTION_INFO[] GetSetManagedExceptions() {
             var guid = VSConstants.DebugEnginesGuids.ManagedOnly_guid;
-
-            IEnumDebugExceptionInfo2 enumerator;
-            var hr = Session.EnumSetExceptions(null, null, guid, out enumerator);
-
-            return GetExceptionsFromEnumerator(hr, enumerator);
-        }
-
-        private static EXCEPTION_INFO[] GetExceptionsFromEnumerator(int enumHResult, IEnumDebugExceptionInfo2 enumerator) {
-            if (enumHResult == VSConstants.S_FALSE)
-                return new EXCEPTION_INFO[0];
-
-            if (enumHResult != VSConstants.S_OK)
-                Marshal.ThrowExceptionForHR(enumHResult);
-
-            uint count;
-            var hr = enumerator.GetCount(out count);
-            if (hr != VSConstants.S_OK)
-                Marshal.ThrowExceptionForHR(hr);
-
-            if (count == 0)
-                return new EXCEPTION_INFO[0];
-
-            var buffer = new EXCEPTION_INFO[count];
-            var countFetched = 0U;
-            hr = enumerator.Next(count, buffer, ref countFetched);
-            if (hr != VSConstants.S_OK)
-                Marshal.ThrowExceptionForHR(hr);
-
-            return buffer;
+            return Session.GetSetExceptionsAsArraySafe(null, null, ref guid);
         }
 
         private ExceptionBreakState GetStateFromSession() {

@@ -56,6 +56,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\#packages\AshMind.Extensions.1.6.0\lib\net40\AshMind.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="JetBrains.Annotations">
+      <HintPath>..\#packages\JetBrains.Annotations.8.0.5.0\lib\net20\JetBrains.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.Debugger.Interop, Version=8.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -144,6 +147,26 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Breakpoints\BreakpointEventProcessor.cs" />
+    <Compile Include="Breakpoints\BreakpointExceptionsDialog.xaml.cs">
+      <DependentUpon>BreakpointExceptionsDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Breakpoints\BreakpointExceptionSettings.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Breakpoints\BreakpointFinder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Breakpoints\BreakpointSetupExceptionsController.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Breakpoints\ExceptionBreakChange.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Breakpoints\ExceptionBreakChangeStore.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ComImports\BREAKPOINT_EDIT_OPERATION.cs" />
     <Compile Include="ComImports\BREAKPOINT_FILTER_TYPE.cs" />
     <Compile Include="ComImports\DEBUGGER_OPTIONS.cs" />
@@ -162,6 +185,12 @@
     <Compile Include="Core\DebugSessionEventSink.cs" />
     <Compile Include="Core\ExceptionBreakState.cs" />
     <Compile Include="Core\DebugSessionManager.cs" />
+    <Compile Include="Core\VSInteropSafeExtensions.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VSInteropSafeExtensions.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Core\VSInteropHelper.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="Core\ExtensionLogger.cs" />
     <Compile Include="Core\IDiagnosticLogger.cs" />
@@ -215,6 +244,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Core\VSInteropSafeExtensions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>VSInteropSafeExtensions.cs</LastGenOutput>
+    </None>
     <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
@@ -249,10 +282,17 @@
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Breakpoints\BreakpointExceptionsDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Options\OptionsPageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>

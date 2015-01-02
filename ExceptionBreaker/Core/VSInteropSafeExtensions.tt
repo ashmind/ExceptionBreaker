@@ -1,0 +1,128 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="Microsoft.VisualStudio.Debugger.Interop" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="Microsoft.VisualStudio.Debugger.Interop" #>
+<#@ output extension=".cs" #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Debugger.Interop;
+
+// This might be a microoptimization -- it is possible to achieve similar results with delegates.
+// However since VS is often slow enough already, I feel optimizations matter.
+<# var enumItemTypes = new Dictionary<Type, Type> {
+	{ typeof(IEnumDebugBoundBreakpoints2), typeof(IDebugBoundBreakpoint2) },
+	{ typeof(IEnumDebugExceptionInfo2), typeof(EXCEPTION_INFO) },
+}; #>
+
+namespace ExceptionBreaker.Core {
+    public static class VSInteropExtensions {
+		private static class EmptyCache<T> {
+			public static readonly T[] Array = new T[0];
+		}
+        // Out parameter => return value
+<# foreach (var method in new[] {
+	GetMethod<IDebugBoundBreakpoint2>("GetBreakpointResolution"),
+	GetMethod<IDebugCodeContext2>("GetDocumentContext"),
+	GetMethod<IDebugDocumentContext2>("GetName")
+}) { #>
+<# var resultType = method.GetParameters().Last().ParameterType.GetElementType(); #>
+        public static <#=resultType.Name#> <#=method.Name#>Safe(this <#=method.DeclaringType.Name#> @object<#=GetExtraParametersString(method)#>) {
+			<#=resultType.Name#> result;
+			var hr = @object.<#=method.Name#>(<#=GetExtraParameterValuesString(method)#>out result);
+            if (hr != VSConstants.S_OK)
+                Marshal.ThrowExceptionForHR(hr);
+
+            return result;
+        } 
+<# } #>
+
+        // Array parameter => return value
+<# foreach (var method in new[] {
+	GetMethod<IDebugBreakpointResolution2>("GetResolutionInfo")
+}) { #>
+<# var resultType = method.GetParameters().Last().ParameterType.GetElementType(); #>
+        public static <#=resultType.Name#> <#=method.Name#>Safe(this <#=method.DeclaringType.Name#> @object<#=GetExtraParametersString(method)#>) {
+			var result = new <#=resultType.Name#>[1];
+			var hr = @object.<#=method.Name#>(<#=GetExtraParameterValuesString(method)#>result);
+            if (hr != VSConstants.S_OK)
+                Marshal.ThrowExceptionForHR(hr);
+
+            return result[0];
+        } 
+<# } #>
+
+        // COM enum out parameter => return array
+<# foreach (var method in new[] {
+	GetMethod<IDebugBreakpointEvent2>("EnumBreakpoints"),
+	GetMethod<IDebugSession2>("EnumSetExceptions"),
+	GetMethod<IDebugSession2>("EnumDefaultExceptions")
+}) { #>
+<# var enumType = method.GetParameters().Last().ParameterType.GetElementType(); #>
+<# var itemType = enumItemTypes[enumType]; #>
+        public static <#=itemType.Name#>[] Get<#=method.Name.Replace("Enum", "")#>AsArraySafe(this <#=method.DeclaringType.Name#> @object<#=GetExtraParametersString(method)#>) {
+			<#=enumType.Name#> @enum;
+			var hr = @object.<#=method.Name#>(<#=GetExtraParameterValuesString(method)#>out @enum);
+			if (hr == VSConstants.S_FALSE)
+                return EmptyCache<<#=itemType.Name#>>.Array;
+
+            if (hr != VSConstants.S_OK)
+                Marshal.ThrowExceptionForHR(hr);
+
+            return @enum.ToArraySafe();
+        } 
+<# } #>
+
+        // COM enum => array
+<# foreach (var x in enumItemTypes) { #>
+        public static <#=x.Value.Name#>[] ToArraySafe(this <#=x.Key.Name#> @enum) {
+            uint count;
+            var hr = @enum.GetCount(out count);
+            if (hr != VSConstants.S_OK)
+                Marshal.ThrowExceptionForHR(hr);
+
+            if (count == 0)
+                return EmptyCache<<#=x.Value.Name#>>.Array;
+
+            var buffer = new <#=x.Value.Name#>[count];
+            var countFetched = 0U;
+            hr = @enum.Next(count, buffer, ref countFetched);
+            if (hr != VSConstants.S_OK)
+                Marshal.ThrowExceptionForHR(hr);
+
+            return buffer;
+        } 
+<# } #>
+    }
+}
+<#+
+public MethodInfo GetMethod<T>(string methodName) {
+	return typeof(T).GetMethod(methodName);
+}
+
+public IEnumerable<ParameterInfo> GetExtraParameters(MethodInfo method) {
+	return method.GetParameters().TakeWhile(p => !p.IsOut);
+}
+
+public string GetExtraParametersString(MethodInfo method) {
+	return string.Join("", GetExtraParameters(method).Select(p => string.Format(", {0}{1} {2}", GetModifiersString(p.ParameterType), GetTypeString(p.ParameterType), p.Name)));
+}
+
+public string GetExtraParameterValuesString(MethodInfo method) {
+	return string.Join("", GetExtraParameters(method).Select(p => string.Format("{0}{1}, ", GetModifiersString(p.ParameterType), p.Name)));
+}
+
+public string GetModifiersString(Type type) {
+	return type.IsByRef ? "ref " : "";
+}
+
+public string GetTypeString(Type type) {
+	return type.IsByRef ? type.GetElementType().Name : type.Name;
+}
+#>

@@ -41,6 +41,12 @@
           <ToolTipText>Break on CLR exceptions.</ToolTipText>
         </Strings>
       </Button>
+
+      <Button guid="guidCommandSet" id="cmdidBreakpointToggleExceptions" type="Button">
+        <Strings>
+          <ButtonText>Set exception rules...</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
   </Commands>
 
@@ -52,6 +58,11 @@
     <!-- Debug menu, just beneath Exceptions: -->
     <CommandPlacement guid="guidCommandSet" id="cmdidToggleBreakOnAll" priority="0x0F01">
       <Parent guid="guidVSDebugGroup" id="IDG_EXECUTION" />
+    </CommandPlacement>
+
+    <!-- Breakpoint context menu, right after "When Hit..." -->
+    <CommandPlacement guid="guidCommandSet" id="cmdidBreakpointToggleExceptions" priority="0x0701">
+      <Parent guid="guidVSDebugGroup" id="IDG_BREAKPOINT_CONTEXT_MODIFY"/>
     </CommandPlacement>
   </CommandPlacements>
 
@@ -65,6 +76,7 @@
     <GuidSymbol name="guidCommandSet" value="{9d55da8f-2be1-44dc-a94a-08154f98f634}">
       <IDSymbol name="ToolbarGroup" value="0x1020" />
       <IDSymbol name="cmdidToggleBreakOnAll" value="0x0100" />
+      <IDSymbol name="cmdidBreakpointToggleExceptions" value="0x0200" />
     </GuidSymbol>
   </Symbols>
 </CommandTable>

@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using ExceptionBreaker.Options;
 using Xunit;
 
-namespace ExceptionBreaker.Tests.Unit {
+namespace ExceptionBreaker.Tests.Unit.Options {
     public class PatternViewModelTests {
         [Fact]
         public void Pattern_IsSetFromDataRegex() {

@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Moq;
 using Xunit;
 
-namespace ExceptionBreaker.Tests.Unit {
+namespace ExceptionBreaker.Tests.Unit.Options {
     public class OptionsPageDataTests {
         [Fact]
         public void XmlSettings_CanBeReloaded() {

@@ -5,7 +5,7 @@ using ExceptionBreaker.Options.Support;
 using Xunit;
 using Xunit.Extensions;
 
-namespace ExceptionBreaker.Tests.Unit {
+namespace ExceptionBreaker.Tests.Unit.Options {
     public class CollectionSyncExtensionsTests {
         [Theory]
         [InlineData("1*,2,3*", "", "1*,3*")]

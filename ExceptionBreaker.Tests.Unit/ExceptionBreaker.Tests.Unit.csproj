@@ -68,11 +68,11 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="CollectionSyncExtensionsTests.cs" />
+    <Compile Include="Options\CollectionSyncExtensionsTests.cs" />
     <Compile Include="MoqExtensions.cs" />
-    <Compile Include="OptionsPageDataTests.cs" />
-    <Compile Include="PatternCollectionViewModelTests.cs" />
-    <Compile Include="PatternViewModelTests.cs" />
+    <Compile Include="Options\OptionsPageDataTests.cs" />
+    <Compile Include="Options\PatternCollectionViewModelTests.cs" />
+    <Compile Include="Options\PatternViewModelTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

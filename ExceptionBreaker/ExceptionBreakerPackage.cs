@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
 using EnvDTE;
+using ExceptionBreaker.Breakpoints;
 using ExceptionBreaker.Core;
 using ExceptionBreaker.Core.VersionSpecific;
 using ExceptionBreaker.Options;
@@ -33,8 +34,10 @@ namespace ExceptionBreaker
     [ProvideOptionPageInExistingCategory(typeof(OptionsPageData), "Debugger", "ExceptionBreaker", 110)]
     [Guid(GuidList.PackageString)]
     public sealed class ExceptionBreakerPackage : Package {
-        private ToggleBreakOnAllController _toolbarController;
         private DTE _dte;
+        private ToggleBreakOnAllController _toolbarController;
+        private BreakpointSetupExceptionsController _breakpointController;
+        private BreakpointEventProcessor _breakpointEventProcessor;
 
         public IDiagnosticLogger Logger { get; private set; }
         public ExceptionBreakManager ExceptionBreakManager { get; private set; }
@@ -65,15 +68,15 @@ namespace ExceptionBreaker
             Logger = new ExtensionLogger("ExceptionBreaker", paneCaption => GetOutputPane(GuidList.OutputPane, paneCaption));
 
             _dte = (DTE)GetService(typeof(DTE));
-            SetupExceptionBreakManager();
+            SetupCoreManager();
 
-            // Add our command handlers for menu (commands must exist in the .vsct file)
             SetupToolbar();
+            SetupBreakpoints();
         }
 
-        private void SetupExceptionBreakManager() {
+        private void SetupCoreManager() {
             var versionSpecificFactory = new VersionSpecificAdapterFactory(_dte);
-            var debugger = GetGlobalService(typeof (SVsShellDebugger));
+            var debugger = GetDebugger();
             var sessionManager = new DebugSessionManager(versionSpecificFactory.AdaptDebuggerInternal(debugger), Logger);
             var optionsPage = new Lazy<OptionsPageData>(() => (OptionsPageData)GetDialogPage(typeof (OptionsPageData)));
             ExceptionBreakManager = new ExceptionBreakManager(
@@ -93,6 +96,23 @@ namespace ExceptionBreaker
                 ExceptionBreakManager,
                 Logger
             );
+        }
+
+        private void SetupBreakpoints() {
+            var menuCommandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            var debugger = GetDebugger();
+            var store = new ExceptionBreakChangeStore(Logger);
+            _breakpointEventProcessor = new BreakpointEventProcessor(debugger, store, ExceptionBreakManager, Logger);
+            _breakpointController = new BreakpointSetupExceptionsController(
+                new CommandInitializer(CommandIDs.BreakpointToggleExceptions, menuCommandService),
+                new BreakpointFinder(_dte),
+                store,
+                Logger
+            );
+        }
+
+        private static IVsDebugger GetDebugger() {
+            return (IVsDebugger)GetGlobalService(typeof(SVsShellDebugger));
         }
     }
 }

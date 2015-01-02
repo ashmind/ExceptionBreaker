@@ -1,0 +1,35 @@
+﻿<vsui:DialogWindow x:Class="ExceptionBreaker.Breakpoints.BreakpointExceptionsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vsui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.10.0"
+                   xmlns:breakpoints="clr-namespace:ExceptionBreaker.Breakpoints"
+        WindowStartupLocation="CenterOwner"
+        Title="When Breakpoint Is Hit"
+        SizeToContent="WidthAndHeight"
+        ResizeMode="NoResize">
+
+  <StackPanel Margin="10">
+    <TextBlock Margin="0 0 0 5">Change exception settings:</TextBlock>
+    <StackPanel Margin="15 0 0 0" Orientation="Horizontal">
+      <TextBlock Margin="0 0 5 0" VerticalAlignment="Center">CLR exceptions:</TextBlock>
+      <ComboBox SelectedValuePath="Tag" SelectedValue="{Binding Path=(breakpoints:BreakpointExceptionSettings.Change)}" Width="120" SelectionChanged="comboChange_OnSelectionChanged">
+        <ComboBoxItem Tag="{x:Static breakpoints:ExceptionBreakChange.NoChange}">No change</ComboBoxItem>
+        <ComboBoxItem Tag="{x:Static breakpoints:ExceptionBreakChange.SetBreakOnAll}">Set Break on All</ComboBoxItem>
+        <ComboBoxItem Tag="{x:Static breakpoints:ExceptionBreakChange.SetBreakOnNone}">Set Break on None</ComboBoxItem>
+      </ComboBox>
+    </StackPanel>
+    <CheckBox IsChecked="{Binding Path=(breakpoints:BreakpointExceptionSettings.ContinueExecution)}" Margin="0 5 0 0">Continue execution</CheckBox>
+
+    <StackPanel Margin="0 5 0 0" HorizontalAlignment="Right" Orientation="Horizontal">
+      <Button x:Name="buttonOk"
+              Width="75" Height="21"
+              Margin="5 2 2 2"
+              Click="buttonOk_Click"
+              IsDefault="True">OK</Button>
+
+      <Button Width="75" Height="21"
+              Margin="2 2 5 2"
+              IsCancel="True">Cancel</Button>
+    </StackPanel>
+  </StackPanel>
+</vsui:DialogWindow>
