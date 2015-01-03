@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace ExceptionBreaker.Breakpoints.Glyphs {
     [Export(typeof(IGlyphFactoryProvider))]
-    [Name(BreakpointGlyphFactory.Name)]
+    [Name("ExceptionBreaker-BreakpointGlyphOverlays")]
     [Order(After = "VsTextMarker")]
     [ContentType("code")]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]

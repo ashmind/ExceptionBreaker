@@ -66,7 +66,7 @@ namespace ExceptionBreaker {
             Mef = ((IComponentModel)GetGlobalService(typeof(SComponentModel))).DefaultExportProvider;
 
             Logger = Mef.GetExportedValue<IDiagnosticLogger>();
-            _dte = Mef.GetExportedValue<DTEImport>().DTE;
+            _dte = Mef.GetExportedValue<DTE>();
             SetupCoreManager();
 
             SetupToolbar();

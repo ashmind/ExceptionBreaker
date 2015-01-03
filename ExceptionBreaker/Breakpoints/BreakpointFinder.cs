@@ -4,7 +4,6 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using EnvDTE;
 using EnvDTE80;
-using ExceptionBreaker.Core;
 using Microsoft.VisualStudio.Text;
 
 namespace ExceptionBreaker.Breakpoints {
@@ -13,8 +12,8 @@ namespace ExceptionBreaker.Breakpoints {
         private readonly DTE _dte;
 
         [ImportingConstructor]
-        public BreakpointFinder(DTEImport dteImport) {
-            _dte = dteImport.DTE;
+        public BreakpointFinder(DTE dte) {
+            _dte = dte;
         }
 
         public IEnumerable<Breakpoint2> GetAllBreakpoints() {

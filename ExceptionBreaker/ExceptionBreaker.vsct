@@ -44,7 +44,7 @@
 
       <Button guid="guidCommandSet" id="cmdidBreakpointToggleExceptions" type="Button">
         <Strings>
-          <ButtonText>Set exception rules...</ButtonText>
+          <ButtonText>Exception rules...</ButtonText>
         </Strings>
       </Button>
     </Buttons>

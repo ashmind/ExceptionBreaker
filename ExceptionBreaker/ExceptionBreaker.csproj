@@ -198,7 +198,7 @@
     <Compile Include="ComImports\IMAGEINFO_TYPE.cs" />
     <Compile Include="Core\CommandInitializer.cs" />
     <Compile Include="Core\DebugSessionEventSink.cs" />
-    <Compile Include="Core\DTEImport.cs" />
+    <Compile Include="Core\DTEExport.cs" />
     <Compile Include="Core\ExceptionBreakState.cs" />
     <Compile Include="Core\DebugSessionManager.cs" />
     <Compile Include="Core\ExtensionLoggerExport.cs" />
@@ -283,7 +283,8 @@
     <Resource Include="ComImports\ReadMe.txt" />
     <Resource Include="Resources\Delete.png" />
     <Resource Include="Resources\Add.png" />
-    <Resource Include="Resources\BreakpointOverlay.png" />
+    <Resource Include="Resources\BreakpointOverlay.SetBreakOnAll.png" />
+    <Resource Include="Resources\BreakpointOverlay.SetBreakOnNone.png" />
     <Content Include="Screenshot.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

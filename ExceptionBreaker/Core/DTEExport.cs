@@ -6,13 +6,13 @@ using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 
 namespace ExceptionBreaker.Core {
-    [Export]
-    public class DTEImport {
+    public class DTEExport {
         [ImportingConstructor]
-        public DTEImport(SVsServiceProvider serviceProvider) {
+        public DTEExport(SVsServiceProvider serviceProvider) {
             DTE = (DTE) serviceProvider.GetService(typeof (DTE));
         }
 
+        [Export]
         public DTE DTE { get; private set; }
     }
 }
