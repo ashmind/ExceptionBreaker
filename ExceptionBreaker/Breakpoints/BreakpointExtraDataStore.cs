@@ -1,27 +1,33 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
-using AshMind.Extensions;
 using EnvDTE80;
 using ExceptionBreaker.Core;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.Debugger.Interop;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace ExceptionBreaker.Breakpoints {
-    public class BreakpointExtraDataProvider : ISolutionDataPersister {
+    [Export]
+    public class BreakpointExtraDataStore : ISolutionDataPersister {
         private readonly BreakpointKeyProvider _keyProvider;
         private readonly BreakpointFinder _finder;
         private readonly JsonSerializer _jsonSerializer;
         private readonly IDiagnosticLogger _logger;
         private readonly ConcurrentDictionary<string, BreakpointExtraData> _store = new ConcurrentDictionary<string, BreakpointExtraData>(StringComparer.InvariantCultureIgnoreCase);
 
-        public BreakpointExtraDataProvider(BreakpointKeyProvider keyProvider, BreakpointFinder finder, JsonSerializer jsonSerializer, IDiagnosticLogger logger) {
+        [ImportingConstructor]
+        public BreakpointExtraDataStore(BreakpointKeyProvider keyProvider, BreakpointFinder finder, IDiagnosticLogger logger) {
             _keyProvider = keyProvider;
             _finder = finder;
-            _jsonSerializer = jsonSerializer;
+            _jsonSerializer = new JsonSerializer {
+                Converters = { new StringEnumConverter() },
+                Formatting = Formatting.None
+            };
             _logger = logger;
         }
 

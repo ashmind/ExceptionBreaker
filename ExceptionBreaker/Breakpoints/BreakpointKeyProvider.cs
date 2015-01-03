@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using EnvDTE80;
 using ExceptionBreaker.Core;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.Debugger.Interop;
 
 namespace ExceptionBreaker.Breakpoints {
+    [Export]
     public class BreakpointKeyProvider {
         [NotNull]
         public string GetKey(Breakpoint2 breakpoint) {

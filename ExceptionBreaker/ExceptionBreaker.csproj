@@ -19,6 +19,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>4.0</OldToolsVersion>
+    <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -60,6 +61,8 @@
       <HintPath>..\#packages\JetBrains.Annotations.8.0.5.0\lib\net20\JetBrains.Annotations.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualStudio.ComponentModelHost" />
+    <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Debugger.Interop, Version=8.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
@@ -68,17 +71,22 @@
     <Reference Include="Microsoft.VisualStudio.Shell.Interop.8.0" />
     <Reference Include="Microsoft.VisualStudio.Shell.Interop.9.0" />
     <Reference Include="Microsoft.VisualStudio.Shell.Interop.10.0" />
+    <Reference Include="Microsoft.VisualStudio.Text.Data" />
+    <Reference Include="Microsoft.VisualStudio.Text.Logic, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Text.UI, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.TextManager.Interop" />
     <Reference Include="Microsoft.VisualStudio.Shell.10.0">
       <Private>false</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0" />
+    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\#packages\Newtonsoft.Json.6.0.6\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
@@ -159,16 +167,21 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Breakpoints\BreakpointExtraData.cs" />
+    <Compile Include="Breakpoints\Glyphs\BreakpointGlyphFactoryProvider.cs" />
     <Compile Include="Breakpoints\BreakpointKeyProvider.cs" />
     <Compile Include="Breakpoints\BreakpointSetupExceptionsController.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Breakpoints\Glyphs\BreakpointGlyphFactory.cs" />
+    <Compile Include="Breakpoints\Glyphs\BreakpointTag.cs" />
     <Compile Include="Breakpoints\ExceptionBreakChange.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Breakpoints\BreakpointExtraDataProvider.cs">
+    <Compile Include="Breakpoints\BreakpointExtraDataStore.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Breakpoints\Glyphs\BreakpointTagger.cs" />
+    <Compile Include="Breakpoints\Glyphs\BreakpointTaggerProvider.cs" />
     <Compile Include="ComImports\BREAKPOINT_EDIT_OPERATION.cs" />
     <Compile Include="ComImports\BREAKPOINT_FILTER_TYPE.cs" />
     <Compile Include="ComImports\DEBUGGER_OPTIONS.cs" />
@@ -185,8 +198,10 @@
     <Compile Include="ComImports\IMAGEINFO_TYPE.cs" />
     <Compile Include="Core\CommandInitializer.cs" />
     <Compile Include="Core\DebugSessionEventSink.cs" />
+    <Compile Include="Core\DTEImport.cs" />
     <Compile Include="Core\ExceptionBreakState.cs" />
     <Compile Include="Core\DebugSessionManager.cs" />
+    <Compile Include="Core\ExtensionLoggerExport.cs" />
     <Compile Include="Core\ISolutionDataPersister.cs" />
     <Compile Include="Core\VSInteropSafeExtensions.cs">
       <AutoGen>True</AutoGen>
@@ -194,7 +209,7 @@
       <DependentUpon>VSInteropSafeExtensions.tt</DependentUpon>
     </Compile>
     <Compile Include="Core\VSInteropHelper.cs" />
-    <Compile Include="Guids.cs" />
+    <Compile Include="GuidList.cs" />
     <Compile Include="Core\ExtensionLogger.cs" />
     <Compile Include="Core\IDiagnosticLogger.cs" />
     <Compile Include="Core\ExceptionBreakManager.cs" />
@@ -268,6 +283,7 @@
     <Resource Include="ComImports\ReadMe.txt" />
     <Resource Include="Resources\Delete.png" />
     <Resource Include="Resources\Add.png" />
+    <Resource Include="Resources\BreakpointOverlay.png" />
     <Content Include="Screenshot.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using EnvDTE;
 using EnvDTE80;
+using ExceptionBreaker.Core;
+using Microsoft.VisualStudio.Text;
 
 namespace ExceptionBreaker.Breakpoints {
+    [Export]
     public class BreakpointFinder {
         private readonly DTE _dte;
 
-        public BreakpointFinder(DTE dte) {
-            _dte = dte;
+        [ImportingConstructor]
+        public BreakpointFinder(DTEImport dteImport) {
+            _dte = dteImport.DTE;
         }
 
         public IEnumerable<Breakpoint2> GetAllBreakpoints() {
@@ -19,15 +24,19 @@ namespace ExceptionBreaker.Breakpoints {
         public Breakpoint2 GetBreakpointForCommand() {
             var path = _dte.ActiveDocument.FullName;
             var line = ((TextSelection)_dte.ActiveDocument.Selection).CurrentLine;
+            return GetBreakpointFromLocation(path, line);
+        }
 
-            var breakpoints = _dte.Debugger.Breakpoints;
-            for (var i = 1; i <= breakpoints.Count; i++) {
-                var breakpoint = breakpoints.Item(i);
-                if (breakpoint.File == path && breakpoint.FileLine == line)
-                    return (Breakpoint2)breakpoint;
-            }
+        public Breakpoint2 GetBreakpointFromSpan(SnapshotSpan span, ITextDocument document) {
+            var path = document.FilePath;
+            var line = span.Snapshot.GetLineNumberFromPosition(span.Span.Start) + 1;
+            return GetBreakpointFromLocation(path, line);
+        }
 
-            return null;
+        private Breakpoint2 GetBreakpointFromLocation(string path, int line) {
+            return GetAllBreakpoints().FirstOrDefault(
+                breakpoint => breakpoint.File == path && breakpoint.FileLine == line
+            );
         }
     }
 }

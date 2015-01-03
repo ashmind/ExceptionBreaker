@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -13,10 +14,9 @@ using ExceptionBreaker.Core;
 using ExceptionBreaker.Core.VersionSpecific;
 using ExceptionBreaker.Options;
 using ExceptionBreaker.Toolbar;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace ExceptionBreaker {
     [PackageRegistration(UseManagedResourcesOnly = true)]
@@ -37,8 +37,9 @@ namespace ExceptionBreaker {
 
         private readonly SolutionDataPersisterCollection _solutionDataPersisters = new SolutionDataPersisterCollection();
 
-        public IDiagnosticLogger Logger { get; private set; }
+        public ExportProvider Mef { get; private set; }
         public ExceptionBreakManager ExceptionBreakManager { get; private set; }
+        public IDiagnosticLogger Logger { get; private set; }
 
         public static ExceptionBreakerPackage Current { get; private set; }
 
@@ -61,9 +62,11 @@ namespace ExceptionBreaker {
         protected override void Initialize() {
             Trace.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this));
             base.Initialize();
-            Logger = new ExtensionLogger("ExceptionBreaker", paneCaption => GetOutputPane(GuidList.OutputPane, paneCaption));
 
-            _dte = (DTE)GetService(typeof(DTE));
+            Mef = ((IComponentModel)GetGlobalService(typeof(SComponentModel))).DefaultExportProvider;
+
+            Logger = Mef.GetExportedValue<IDiagnosticLogger>();
+            _dte = Mef.GetExportedValue<DTEImport>().DTE;
             SetupCoreManager();
 
             SetupToolbar();
@@ -102,18 +105,14 @@ namespace ExceptionBreaker {
             var menuCommandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             var debugger = GetDebugger();
 
-            var jsonSerializer = new JsonSerializer {
-                Formatting = Formatting.None,
-                Converters = { new StringEnumConverter() }
-            };
-            var finder = new BreakpointFinder(_dte);
-            var extraDataProvider = new BreakpointExtraDataProvider(new BreakpointKeyProvider(), finder, jsonSerializer, Logger);
-            _solutionDataPersisters.Add(extraDataProvider);
+            var finder = Mef.GetExportedValue<BreakpointFinder>();
+            var extraDataStore = Mef.GetExportedValue<BreakpointExtraDataStore>();
+            _solutionDataPersisters.Add(extraDataStore);
 
-            _breakpointEventProcessor = new BreakpointEventProcessor(debugger, extraDataProvider, ExceptionBreakManager, Logger);
+            _breakpointEventProcessor = new BreakpointEventProcessor(debugger, extraDataStore, ExceptionBreakManager, Logger);
             _breakpointController = new BreakpointSetupExceptionsController(
                 new CommandInitializer(CommandIDs.BreakpointToggleExceptions, menuCommandService),
-                finder, extraDataProvider, Logger
+                finder, extraDataStore, Logger
             );
         }
 

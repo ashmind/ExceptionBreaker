@@ -9,13 +9,13 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace ExceptionBreaker.Breakpoints {
     public class BreakpointEventProcessor : IDebugEventCallback2, IDisposable {
         private readonly IVsDebugger _debugger;
-        private readonly BreakpointExtraDataProvider _extraDataProvider;
+        private readonly BreakpointExtraDataStore _extraDataStore;
         private readonly ExceptionBreakManager _breakManager;
         private readonly IDiagnosticLogger _logger;
 
-        public BreakpointEventProcessor(IVsDebugger debugger, BreakpointExtraDataProvider extraDataProvider, ExceptionBreakManager breakManager, IDiagnosticLogger logger) {
+        public BreakpointEventProcessor(IVsDebugger debugger, BreakpointExtraDataStore extraDataStore, ExceptionBreakManager breakManager, IDiagnosticLogger logger) {
             _debugger = debugger;
-            _extraDataProvider = extraDataProvider;
+            _extraDataStore = extraDataStore;
             _breakManager = breakManager;
             _logger = logger;
 
@@ -46,7 +46,7 @@ namespace ExceptionBreaker.Breakpoints {
 
             _logger.WriteLine("Event: Breakpoint reached.");
             foreach (var breakpoint in breakpointEvent.GetBreakpointsAsArraySafe()) {
-                var extraData = _extraDataProvider.GetData(breakpoint);
+                var extraData = _extraDataStore.GetData(breakpoint);
                 if (extraData == null || extraData.ExceptionBreakChange == ExceptionBreakChange.NoChange)
                     continue;
 

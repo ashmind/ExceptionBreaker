@@ -9,17 +9,17 @@ using ExceptionBreaker.Core;
 namespace ExceptionBreaker.Breakpoints {
     public class BreakpointSetupExceptionsController {
         private readonly BreakpointFinder _breakpointFinder;
-        private readonly BreakpointExtraDataProvider _extraDataProvider;
+        private readonly BreakpointExtraDataStore _extraDataStore;
         private readonly IDiagnosticLogger _logger;
         private readonly MenuCommand _command;
 
         public BreakpointSetupExceptionsController(CommandInitializer commandInitializer,
                                                    BreakpointFinder breakpointFinder,
-                                                   BreakpointExtraDataProvider extraDataProvider,
+                                                   BreakpointExtraDataStore extraDataStore,
                                                    IDiagnosticLogger logger) 
         {
             _breakpointFinder = breakpointFinder;
-            _extraDataProvider = extraDataProvider;
+            _extraDataStore = extraDataStore;
             _logger = logger;
             _command = commandInitializer.InitializeCommand(command_Callback, command_BeforeQueryStatus);
         }
@@ -27,9 +27,9 @@ namespace ExceptionBreaker.Breakpoints {
         private void command_BeforeQueryStatus(object sender, EventArgs e) {
             try {
                 var breakpoint = _breakpointFinder.GetBreakpointForCommand();
-                var extraData = _extraDataProvider.GetData(breakpoint);
+                var extraData = _extraDataStore.GetData(breakpoint);
 
-                var @checked = (extraData != null && extraData.ExceptionBreakChange != ExceptionBreakChange.NoChange);
+                var @checked = extraData.ExceptionBreakChange != ExceptionBreakChange.NoChange;
                 if (@checked == _command.Checked)
                     return;
 
@@ -55,10 +55,10 @@ namespace ExceptionBreaker.Breakpoints {
         }
 
         private void RequestAndUpdateExceptionSettings(Breakpoint2 breakpoint) {
-            var extraData = _extraDataProvider.GetData(breakpoint);
+            var extraData = _extraDataStore.GetData(breakpoint);
             var dialog = new BreakpointExceptionsDialog {
                 ViewModel = new BreakpointExceptionSettings {
-                    Change = extraData != null ? extraData.ExceptionBreakChange : ExceptionBreakChange.NoChange,
+                    Change = extraData.ExceptionBreakChange,
                     ContinueExecution = !breakpoint.BreakWhenHit
                 }
             };

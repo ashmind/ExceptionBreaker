@@ -29,6 +29,7 @@ It is available through both `Debug` toolbar and `Debug` top level menu.</Descri
     </Reference>
   </References>
   <Content>
+    <MefComponent>|%CurrentProject%|</MefComponent>
     <VsPackage>|%CurrentProject%;PkgdefProjectOutputGroup|</VsPackage>
   </Content>
 </Vsix>
