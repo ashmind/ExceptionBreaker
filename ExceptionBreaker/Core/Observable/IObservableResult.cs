@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace ExceptionBreaker.Options.Support {
+namespace ExceptionBreaker.Core.Observable {
     public interface IObservableResult<T> : INotifyPropertyChanged {
         event EventHandler ValueChanged;
         T Value { get; }

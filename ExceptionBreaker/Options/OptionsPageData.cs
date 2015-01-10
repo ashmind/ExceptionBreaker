@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Windows;
 using AshMind.Extensions;
 using ExceptionBreaker.Core;
+using ExceptionBreaker.Core.Observable;
 using ExceptionBreaker.Options.ImprovedComponentModel;
 using ExceptionBreaker.Options.Support;
 using Microsoft.Forums.WpfDialogPageIntegration;

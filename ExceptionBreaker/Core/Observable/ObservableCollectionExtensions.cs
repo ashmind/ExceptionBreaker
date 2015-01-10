@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
-namespace ExceptionBreaker.Options.Support {
+namespace ExceptionBreaker.Core.Observable {
     public static class ObservableCollectionExtensions {
         public static IObservableResult<TResult> GetObservable<TCollection, TResult>(this TCollection collection, Func<TCollection, TResult> get, Action<TCollection, NotifyCollectionChangedEventArgs, Action> subscribeExtra = null)
             where TCollection : INotifyCollectionChanged 

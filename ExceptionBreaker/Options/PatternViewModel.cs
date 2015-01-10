@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using System.Windows.Data;
+using ExceptionBreaker.Core.Observable;
 using ExceptionBreaker.Options.Support;
 
 namespace ExceptionBreaker.Options {

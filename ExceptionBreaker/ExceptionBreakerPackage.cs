@@ -31,7 +31,7 @@ namespace ExceptionBreaker {
         private DTE _dte;
         // ReSharper disable NotAccessedField.Local
         private ToggleBreakOnAllController _toolbarController;
-        private BreakpointSetupExceptionsController _breakpointController;
+        private BreakpointExceptionsController _breakpointController;
         private BreakpointEventProcessor _breakpointEventProcessor;
         // ReSharper restore NotAccessedField.Local
 
@@ -110,7 +110,7 @@ namespace ExceptionBreaker {
             _solutionDataPersisters.Add(extraDataStore);
 
             _breakpointEventProcessor = new BreakpointEventProcessor(debugger, extraDataStore, ExceptionBreakManager, Logger);
-            _breakpointController = new BreakpointSetupExceptionsController(
+            _breakpointController = new BreakpointExceptionsController(
                 new CommandInitializer(CommandIDs.BreakpointToggleExceptions, menuCommandService),
                 finder, extraDataStore, Logger
             );

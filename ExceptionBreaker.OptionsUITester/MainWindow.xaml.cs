@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using ExceptionBreaker.Core.Observable;
 using ExceptionBreaker.Options;
 using ExceptionBreaker.Options.Support;
 

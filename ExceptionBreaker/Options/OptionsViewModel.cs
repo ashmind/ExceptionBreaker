@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using ExceptionBreaker.Core.Observable;
 using ExceptionBreaker.Options.Support;
 
 namespace ExceptionBreaker.Options {

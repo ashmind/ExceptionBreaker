@@ -7,16 +7,16 @@ using EnvDTE80;
 using ExceptionBreaker.Core;
 
 namespace ExceptionBreaker.Breakpoints {
-    public class BreakpointSetupExceptionsController {
+    public class BreakpointExceptionsController {
         private readonly BreakpointFinder _breakpointFinder;
         private readonly BreakpointExtraDataStore _extraDataStore;
         private readonly IDiagnosticLogger _logger;
         private readonly MenuCommand _command;
 
-        public BreakpointSetupExceptionsController(CommandInitializer commandInitializer,
-                                                   BreakpointFinder breakpointFinder,
-                                                   BreakpointExtraDataStore extraDataStore,
-                                                   IDiagnosticLogger logger) 
+        public BreakpointExceptionsController(CommandInitializer commandInitializer,
+                                              BreakpointFinder breakpointFinder,
+                                              BreakpointExtraDataStore extraDataStore,
+                                              IDiagnosticLogger logger) 
         {
             _breakpointFinder = breakpointFinder;
             _extraDataStore = extraDataStore;
@@ -57,7 +57,8 @@ namespace ExceptionBreaker.Breakpoints {
         private void RequestAndUpdateExceptionSettings(Breakpoint2 breakpoint) {
             var extraData = _extraDataStore.GetData(breakpoint);
             var dialog = new BreakpointExceptionsDialog {
-                ViewModel = new BreakpointExceptionSettings {
+                ViewModel = new BreakpointExceptionsViewModel {
+                    ShouldChange = { Value = extraData.ExceptionBreakChange != ExceptionBreakChange.NoChange },
                     Change = extraData.ExceptionBreakChange,
                     ContinueExecution = !breakpoint.BreakWhenHit
                 }
@@ -68,9 +69,23 @@ namespace ExceptionBreaker.Breakpoints {
                 return;
             }
 
-            _logger.WriteLine("Updating breakpoint settings: continue execution = {0}, change = {1}.", dialog.ViewModel.ContinueExecution, dialog.ViewModel.Change);
-            extraData.ExceptionBreakChange = dialog.ViewModel.Change;
-            breakpoint.BreakWhenHit = !dialog.ViewModel.ContinueExecution;
+            var change = dialog.ViewModel.ShouldChange.Value ? dialog.ViewModel.Change : ExceptionBreakChange.NoChange;
+            _logger.WriteLine("Updating breakpoint settings: continue execution = {0}, change = {1}.", dialog.ViewModel.ContinueExecution, change);
+            extraData.ExceptionBreakChange = change;
+
+            SetBreakWhenHit(breakpoint, !dialog.ViewModel.ContinueExecution);
+        }
+
+        private static void SetBreakWhenHit(Breakpoint2 breakpoint, bool value) {
+            var messageStubbed = false;
+            if (!breakpoint.BreakWhenHit && string.IsNullOrEmpty(breakpoint.Message)) {
+                // http://stackoverflow.com/questions/27753513/visual-studio-sdk-breakpoint2-breakwhenhit-true-throws-exception-0x8971101a/27870066#27870066
+                breakpoint.Message = "stub";
+                messageStubbed = true;
+            }
+            breakpoint.BreakWhenHit = value;
+            if (messageStubbed)
+                breakpoint.Message = "";
         }
     }
 }

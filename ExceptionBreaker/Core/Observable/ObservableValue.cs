@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace ExceptionBreaker.Options.Support {
+namespace ExceptionBreaker.Core.Observable {
     public class ObservableValue<T> : IObservableResult<T> {
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
         public event EventHandler ValueChanged = delegate { };

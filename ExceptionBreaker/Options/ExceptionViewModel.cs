@@ -1,4 +1,5 @@
 ﻿using System;
+using ExceptionBreaker.Core.Observable;
 using ExceptionBreaker.Options.Support;
 
 namespace ExceptionBreaker.Options {

@@ -160,7 +160,7 @@
       <DependentUpon>BreakpointExceptionsDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Breakpoints\BreakpointExceptionSettings.cs">
+    <Compile Include="Breakpoints\BreakpointExceptionsViewModel.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Breakpoints\BreakpointFinder.cs">
@@ -169,7 +169,7 @@
     <Compile Include="Breakpoints\BreakpointExtraData.cs" />
     <Compile Include="Breakpoints\Glyphs\BreakpointGlyphFactoryProvider.cs" />
     <Compile Include="Breakpoints\BreakpointKeyProvider.cs" />
-    <Compile Include="Breakpoints\BreakpointSetupExceptionsController.cs">
+    <Compile Include="Breakpoints\BreakpointExceptionsController.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Breakpoints\Glyphs\BreakpointGlyphFactory.cs" />
@@ -228,9 +228,9 @@
     <Compile Include="Options\Support\CollectionSyncExtensions.cs" />
     <Compile Include="Options\ImprovedComponentModel\CustomPropertyDescriptor.cs" />
     <Compile Include="Options\Support\ProperListPropertyDescriptor.cs" />
-    <Compile Include="Options\Support\ObservableCollectionExtensions.cs" />
-    <Compile Include="Options\Support\IObservableResult.cs" />
-    <Compile Include="Options\Support\ObservableValue.cs">
+    <Compile Include="Core\Observable\ObservableCollectionExtensions.cs" />
+    <Compile Include="Core\Observable\IObservableResult.cs" />
+    <Compile Include="Core\Observable\ObservableValue.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Options\OptionsPageData.cs">

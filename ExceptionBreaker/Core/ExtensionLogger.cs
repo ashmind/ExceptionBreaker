@@ -49,7 +49,7 @@ namespace ExceptionBreaker.Core {
             var guid = _outputPaneGuid;
             var pane = (IVsOutputWindowPane)null;
             var hr = outputWindow.GetPane(ref guid, out pane);
-            if (hr != VSConstants.E_FAIL)
+            if (hr != VSConstants.E_FAIL && hr != VSConstants.E_INVALIDARG)
                 VSInteropHelper.Validate(hr);
 
             if (pane == null) {

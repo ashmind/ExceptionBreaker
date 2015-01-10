@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using AshMind.Extensions;
+using ExceptionBreaker.Core.Observable;
 using ExceptionBreaker.Options.Support;
 
 namespace ExceptionBreaker.Options {

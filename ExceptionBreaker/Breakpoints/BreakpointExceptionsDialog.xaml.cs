@@ -14,8 +14,8 @@ namespace ExceptionBreaker.Breakpoints {
             InitializeComponent();
         }
 
-        public BreakpointExceptionSettings ViewModel {
-            get { return (BreakpointExceptionSettings)DataContext; }
+        public BreakpointExceptionsViewModel ViewModel {
+            get { return (BreakpointExceptionsViewModel)DataContext; }
             set { DataContext = value; }
         }
 
