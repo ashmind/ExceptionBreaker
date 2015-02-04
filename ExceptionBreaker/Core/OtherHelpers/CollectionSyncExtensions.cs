@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ExceptionBreaker.Options.Support {
+namespace ExceptionBreaker.Core.OtherHelpers {
     public static class CollectionSyncExtensions {
         public static void SyncToWhere<T>(this IList<T> source, IList<T> target, Func<T, bool> predicate) {
             var offset = 0;

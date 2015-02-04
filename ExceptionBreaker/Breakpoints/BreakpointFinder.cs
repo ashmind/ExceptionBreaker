@@ -37,5 +37,11 @@ namespace ExceptionBreaker.Breakpoints {
                 breakpoint => breakpoint.File == path && breakpoint.FileLine == line
             );
         }
+
+        public SnapshotSpan GetSpanFromBreakpoint(Breakpoint2 breakpoint, ITextDocument document) {
+            var snapshot = document.TextBuffer.CurrentSnapshot;
+            var line = snapshot.GetLineFromLineNumber(breakpoint.FileLine - 1);
+            return line.Extent;
+        }
     }
 }

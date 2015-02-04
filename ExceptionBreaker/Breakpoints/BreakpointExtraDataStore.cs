@@ -20,6 +20,8 @@ namespace ExceptionBreaker.Breakpoints {
         private readonly IDiagnosticLogger _logger;
         private readonly ConcurrentDictionary<string, BreakpointExtraData> _store = new ConcurrentDictionary<string, BreakpointExtraData>(StringComparer.InvariantCultureIgnoreCase);
 
+        public event EventHandler<BreakpointExtraDataChangedEventArgs> DataChanged = delegate {};
+
         [ImportingConstructor]
         public BreakpointExtraDataStore(BreakpointKeyProvider keyProvider, BreakpointFinder finder, IDiagnosticLogger logger) {
             _keyProvider = keyProvider;
@@ -50,7 +52,9 @@ namespace ExceptionBreaker.Breakpoints {
             return _store.GetOrAdd(key, k => new BreakpointExtraData());
         }
 
-        #region ISolutionDataPersister Members
+        public void NotifyDataChanged([NotNull] Breakpoint2 breakpoint) {
+            DataChanged(this, new BreakpointExtraDataChangedEventArgs(breakpoint));
+        }
 
         string ISolutionDataPersister.Key {
             // due to VS limitation, this has to be shorted than 31 char and contain no '.'
@@ -67,7 +71,7 @@ namespace ExceptionBreaker.Breakpoints {
             }
 
             using (var writer = new StreamWriter(stream)) {
-                _jsonSerializer.Serialize(writer, _store);
+                _jsonSerializer.Serialize(writer, _store.ToDictionary(p => p.Key, p => new BreakpointExtraDataSerializable(p.Value)));
             }
             _logger.WriteLine("  Saved {0} extra data entries to the solution.", _store.Count);
         }
@@ -75,16 +79,32 @@ namespace ExceptionBreaker.Breakpoints {
         void ISolutionDataPersister.LoadFrom(Stream stream) {
             using (var reader = new StreamReader(stream))
             using (var jsonReader = new JsonTextReader(reader)) {
-                var loaded = _jsonSerializer.Deserialize<IDictionary<string, BreakpointExtraData>>(jsonReader);
+                var loaded = _jsonSerializer.Deserialize<IDictionary<string, BreakpointExtraDataSerializable>>(jsonReader);
                 _store.Clear();
                 _logger.WriteLine("Breakpoints: loading extra data.");
                 foreach (var pair in loaded) {
-                    _store[pair.Key] = pair.Value;
+                    _store[pair.Key] = pair.Value.ToData();
                     _logger.WriteLine("  Loaded '{0}': change = {1}.", pair.Key, pair.Value.ExceptionBreakChange);
                 }
             }
         }
 
+        #region BreakpointExtraDataSerialized Class
+        private class BreakpointExtraDataSerializable {
+            public BreakpointExtraDataSerializable(BreakpointExtraData data) {
+                Version = 1;
+                ExceptionBreakChange = data.ExceptionBreakChange.Value;
+            }
+
+            public BreakpointExtraData ToData() {
+                return new BreakpointExtraData {
+                    ExceptionBreakChange = {Value = ExceptionBreakChange}
+                };
+            }
+
+            public int Version { get; set; }
+            public ExceptionBreakChange ExceptionBreakChange { get; set; }
+        }
         #endregion
     }
 }

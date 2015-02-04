@@ -14,6 +14,11 @@ namespace ExceptionBreaker.Breakpoints.Glyphs {
             _document = document;
             _finder = finder;
             _extraDataStore = extraDataStore;
+            _extraDataStore.DataChanged += (sender, e) => {
+                var handler = TagsChanged;
+                if (handler != null)
+                    handler(this, new SnapshotSpanEventArgs(finder.GetSpanFromBreakpoint(e.Breakpoint, document)));
+            };
         }
 
         public IEnumerable<ITagSpan<BreakpointTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
@@ -23,7 +28,7 @@ namespace ExceptionBreaker.Breakpoints.Glyphs {
                     continue;
 
                 var extraData = _extraDataStore.GetData(breakpoint);
-                if (extraData.ExceptionBreakChange == ExceptionBreakChange.NoChange)
+                if (extraData.ExceptionBreakChange.Value == ExceptionBreakChange.NoChange)
                     continue;
 
                 yield return new TagSpan<BreakpointTag>(new SnapshotSpan(span.Start, span.Length), new BreakpointTag(extraData));

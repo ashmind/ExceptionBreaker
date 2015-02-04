@@ -12,7 +12,7 @@ namespace ExceptionBreaker.Breakpoints {
         private readonly BreakpointExtraDataStore _extraDataStore;
         private readonly IDiagnosticLogger _logger;
         private readonly MenuCommand _command;
-
+        
         public BreakpointExceptionsController(CommandInitializer commandInitializer,
                                               BreakpointFinder breakpointFinder,
                                               BreakpointExtraDataStore extraDataStore,
@@ -29,7 +29,7 @@ namespace ExceptionBreaker.Breakpoints {
                 var breakpoint = _breakpointFinder.GetBreakpointForCommand();
                 var extraData = _extraDataStore.GetData(breakpoint);
 
-                var @checked = extraData.ExceptionBreakChange != ExceptionBreakChange.NoChange;
+                var @checked = extraData.ExceptionBreakChange.Value != ExceptionBreakChange.NoChange;
                 if (@checked == _command.Checked)
                     return;
 
@@ -58,8 +58,8 @@ namespace ExceptionBreaker.Breakpoints {
             var extraData = _extraDataStore.GetData(breakpoint);
             var dialog = new BreakpointExceptionsDialog {
                 ViewModel = new BreakpointExceptionsViewModel {
-                    ShouldChange = { Value = extraData.ExceptionBreakChange != ExceptionBreakChange.NoChange },
-                    Change = extraData.ExceptionBreakChange,
+                    ShouldChange = { Value = extraData.ExceptionBreakChange.Value != ExceptionBreakChange.NoChange },
+                    Change = extraData.ExceptionBreakChange.Value,
                     ContinueExecution = !breakpoint.BreakWhenHit
                 }
             };
@@ -71,14 +71,15 @@ namespace ExceptionBreaker.Breakpoints {
 
             var change = dialog.ViewModel.ShouldChange.Value ? dialog.ViewModel.Change : ExceptionBreakChange.NoChange;
             _logger.WriteLine("Updating breakpoint settings: continue execution = {0}, change = {1}.", dialog.ViewModel.ContinueExecution, change);
-            extraData.ExceptionBreakChange = change;
+            extraData.ExceptionBreakChange.Value = change;
 
             SetBreakWhenHit(breakpoint, !dialog.ViewModel.ContinueExecution);
+            _extraDataStore.NotifyDataChanged(breakpoint);
         }
 
         private static void SetBreakWhenHit(Breakpoint2 breakpoint, bool value) {
             var messageStubbed = false;
-            if (!breakpoint.BreakWhenHit && string.IsNullOrEmpty(breakpoint.Message)) {
+            if (value && string.IsNullOrEmpty(breakpoint.Message)) {
                 // http://stackoverflow.com/questions/27753513/visual-studio-sdk-breakpoint2-breakwhenhit-true-throws-exception-0x8971101a/27870066#27870066
                 breakpoint.Message = "stub";
                 messageStubbed = true;

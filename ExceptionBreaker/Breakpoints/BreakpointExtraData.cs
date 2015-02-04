@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ExceptionBreaker.Core.Observable;
 
 namespace ExceptionBreaker.Breakpoints {
     public class BreakpointExtraData {
         public BreakpointExtraData() {
-            Version = 1; // for serialization tracking
+            ExceptionBreakChange = new ObservableValue<ExceptionBreakChange>();
         }
 
-        public int Version { get; set; }
-        public ExceptionBreakChange ExceptionBreakChange { get; set; }
+        public ObservableValue<ExceptionBreakChange> ExceptionBreakChange { get; private set; }
     }
 }

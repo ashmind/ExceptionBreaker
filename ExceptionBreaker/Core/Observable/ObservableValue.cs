@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Windows.Controls;
 
 namespace ExceptionBreaker.Core.Observable {
     public class ObservableValue<T> : IObservableResult<T> {
@@ -39,6 +40,10 @@ namespace ExceptionBreaker.Core.Observable {
                 lastValue = Value;
             };
             return result;
+        }
+
+        public override string ToString() {
+            return Value != null ? Value.ToString() : string.Empty;
         }
     }
 }

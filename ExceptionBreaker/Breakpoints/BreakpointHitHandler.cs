@@ -7,13 +7,13 @@ using Microsoft.VisualStudio.Debugger.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace ExceptionBreaker.Breakpoints {
-    public class BreakpointEventProcessor : IDebugEventCallback2, IDisposable {
+    public class BreakpointHitHandler : IDebugEventCallback2, IDisposable {
         private readonly IVsDebugger _debugger;
         private readonly BreakpointExtraDataStore _extraDataStore;
         private readonly ExceptionBreakManager _breakManager;
         private readonly IDiagnosticLogger _logger;
 
-        public BreakpointEventProcessor(IVsDebugger debugger, BreakpointExtraDataStore extraDataStore, ExceptionBreakManager breakManager, IDiagnosticLogger logger) {
+        public BreakpointHitHandler(IVsDebugger debugger, BreakpointExtraDataStore extraDataStore, ExceptionBreakManager breakManager, IDiagnosticLogger logger) {
             _debugger = debugger;
             _extraDataStore = extraDataStore;
             _breakManager = breakManager;
@@ -47,10 +47,13 @@ namespace ExceptionBreaker.Breakpoints {
             _logger.WriteLine("Event: Breakpoint reached.");
             foreach (var breakpoint in breakpointEvent.GetBreakpointsAsArraySafe()) {
                 var extraData = _extraDataStore.GetData(breakpoint);
-                if (extraData == null || extraData.ExceptionBreakChange == ExceptionBreakChange.NoChange)
+                if (extraData == null)
                     continue;
 
-                var change = extraData.ExceptionBreakChange;
+                var change = extraData.ExceptionBreakChange.Value;
+                if (change == ExceptionBreakChange.NoChange)
+                    continue;
+
                 _logger.WriteLine("Breakpoint requires exception state change: {0}.", change);
                 _breakManager.CurrentState = change == ExceptionBreakChange.SetBreakOnAll
                                            ? ExceptionBreakState.BreakOnAll

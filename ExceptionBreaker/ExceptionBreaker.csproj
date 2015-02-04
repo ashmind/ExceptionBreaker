@@ -155,7 +155,9 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Breakpoints\BreakpointEventProcessor.cs" />
+    <Compile Include="Breakpoints\BreakpointExtraDataChangedEventArgs.cs" />
+    <Compile Include="Breakpoints\BreakpointObservableListProvider.cs" />
+    <Compile Include="Breakpoints\BreakpointHitHandler.cs" />
     <Compile Include="Breakpoints\BreakpointExceptionsDialog.xaml.cs">
       <DependentUpon>BreakpointExceptionsDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -225,7 +227,7 @@
     <Compile Include="Options\RegexValidationRule.cs" />
     <Compile Include="Options\Support\BindingDelay.cs" />
     <Compile Include="Options\Support\BindingDelayExtension.cs" />
-    <Compile Include="Options\Support\CollectionSyncExtensions.cs" />
+    <Compile Include="Core\OtherHelpers\CollectionSyncExtensions.cs" />
     <Compile Include="Options\ImprovedComponentModel\CustomPropertyDescriptor.cs" />
     <Compile Include="Options\Support\ProperListPropertyDescriptor.cs" />
     <Compile Include="Core\Observable\ObservableCollectionExtensions.cs" />
