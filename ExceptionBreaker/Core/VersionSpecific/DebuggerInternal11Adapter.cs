@@ -12,6 +12,10 @@ namespace ExceptionBreaker.Core.VersionSpecific {
             _debugger = debugger;
         }
 
+        public IBreakpointManager BreakpointManager {
+            get { return _debugger.BreakpointManager; }
+        }
+
         public IDebugSession3 CurrentSession {
             get { return _debugger.CurrentSession; }
         }

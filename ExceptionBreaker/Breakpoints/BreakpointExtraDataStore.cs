@@ -15,7 +15,6 @@ namespace ExceptionBreaker.Breakpoints {
     [Export]
     public class BreakpointExtraDataStore : ISolutionDataPersister {
         private readonly BreakpointKeyProvider _keyProvider;
-        private readonly BreakpointFinder _finder;
         private readonly JsonSerializer _jsonSerializer;
         private readonly IDiagnosticLogger _logger;
         private readonly ConcurrentDictionary<string, BreakpointExtraData> _store = new ConcurrentDictionary<string, BreakpointExtraData>(StringComparer.InvariantCultureIgnoreCase);
@@ -23,14 +22,29 @@ namespace ExceptionBreaker.Breakpoints {
         public event EventHandler<BreakpointExtraDataChangedEventArgs> DataChanged = delegate {};
 
         [ImportingConstructor]
-        public BreakpointExtraDataStore(BreakpointKeyProvider keyProvider, BreakpointFinder finder, IDiagnosticLogger logger) {
+        public BreakpointExtraDataStore(
+            BreakpointKeyProvider keyProvider,
+            BreakpointObservableListProvider breakpointListProvider,
+            IDiagnosticLogger logger
+        ) {
             _keyProvider = keyProvider;
-            _finder = finder;
             _jsonSerializer = new JsonSerializer {
                 Converters = { new StringEnumConverter() },
                 Formatting = Formatting.None
             };
             _logger = logger;
+
+            breakpointListProvider.Breakpoints.CollectionChanged += (sender, e) => {
+                if (e.OldItems == null)
+                    return;
+
+                foreach (Breakpoint2 old in e.OldItems) {
+                    BreakpointExtraData data;
+                    var removed = _store.TryRemove(_keyProvider.GetKey(old), out data);
+                    if (removed)
+                        DataChanged(this, new BreakpointExtraDataChangedEventArgs(old));
+                }
+            };
         }
 
         [NotNull]
@@ -63,13 +77,6 @@ namespace ExceptionBreaker.Breakpoints {
 
         void ISolutionDataPersister.SaveTo(Stream stream) {
             _logger.WriteLine("Breakpoints: saving extra data.");
-            var existingBreakpointKeys = _finder.GetAllBreakpoints().Select(b => _keyProvider.GetKey(b));
-            foreach (var key in _store.Keys.Except(existingBreakpointKeys).ToArray()) {
-                BreakpointExtraData _;
-                _store.TryRemove(key, out _);
-                _logger.WriteLine("  Skipped '{0}' — no corresponding breakpoint.", key);
-            }
-
             using (var writer = new StreamWriter(stream)) {
                 _jsonSerializer.Serialize(writer, _store.ToDictionary(p => p.Key, p => new BreakpointExtraDataSerializable(p.Value)));
             }
@@ -91,6 +98,10 @@ namespace ExceptionBreaker.Breakpoints {
 
         #region BreakpointExtraDataSerialized Class
         private class BreakpointExtraDataSerializable {
+            [UsedImplicitly]
+            public BreakpointExtraDataSerializable() {
+            }
+
             public BreakpointExtraDataSerializable(BreakpointExtraData data) {
                 Version = 1;
                 ExceptionBreakChange = data.ExceptionBreakChange.Value;

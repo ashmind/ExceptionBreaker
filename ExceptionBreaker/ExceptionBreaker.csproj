@@ -205,6 +205,7 @@
     <Compile Include="Core\DebugSessionManager.cs" />
     <Compile Include="Core\ExtensionLoggerExport.cs" />
     <Compile Include="Core\ISolutionDataPersister.cs" />
+    <Compile Include="Core\VsDebuggerExport.cs" />
     <Compile Include="Core\VSInteropSafeExtensions.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -221,7 +222,7 @@
     <Compile Include="Core\VersionSpecific\DebuggerInternal10Adapter.cs" />
     <Compile Include="Core\VersionSpecific\DebuggerInternal11Adapter.cs" />
     <Compile Include="Core\VersionSpecific\IDebuggerInternalAdapter.cs" />
-    <Compile Include="Core\VersionSpecific\VersionSpecificAdapterFactory.cs" />
+    <Compile Include="Core\VersionSpecific\VersionSpecificAdapterExport.cs" />
     <Compile Include="Options\ExceptionViewModel.cs" />
     <Compile Include="Options\PatternData.cs" />
     <Compile Include="Options\RegexValidationRule.cs" />

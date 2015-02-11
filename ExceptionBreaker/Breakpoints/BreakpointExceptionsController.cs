@@ -27,6 +27,9 @@ namespace ExceptionBreaker.Breakpoints {
         private void command_BeforeQueryStatus(object sender, EventArgs e) {
             try {
                 var breakpoint = _breakpointFinder.GetBreakpointForCommand();
+                if (breakpoint == null)
+                    return;
+
                 var extraData = _extraDataStore.GetData(breakpoint);
 
                 var @checked = extraData.ExceptionBreakChange.Value != ExceptionBreakChange.NoChange;

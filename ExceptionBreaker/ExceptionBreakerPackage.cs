@@ -78,9 +78,8 @@ namespace ExceptionBreaker {
         }
 
         private void SetupCoreManager() {
-            var versionSpecificFactory = new VersionSpecificAdapterFactory(_dte);
-            var debugger = GetDebugger();
-            var sessionManager = new DebugSessionManager(versionSpecificFactory.AdaptDebuggerInternal(debugger), Logger);
+            var debugger = Mef.GetExportedValue<IDebuggerInternalAdapter>();
+            var sessionManager = new DebugSessionManager(debugger, Logger);
             var optionsPage = new Lazy<OptionsPageData>(() => (OptionsPageData)GetDialogPage(typeof (OptionsPageData)));
             ExceptionBreakManager = new ExceptionBreakManager(
                 sessionManager,
@@ -103,7 +102,7 @@ namespace ExceptionBreaker {
 
         private void SetupBreakpoints() {
             var menuCommandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            var debugger = GetDebugger();
+            var debugger = Mef.GetExportedValue<IVsDebugger>();
 
             var finder = Mef.GetExportedValue<BreakpointFinder>();
             var extraDataStore = Mef.GetExportedValue<BreakpointExtraDataStore>();
@@ -114,10 +113,6 @@ namespace ExceptionBreaker {
                 new CommandInitializer(CommandIDs.BreakpointToggleExceptions, menuCommandService),
                 finder, extraDataStore, Logger
             );
-        }
-
-        private static IVsDebugger GetDebugger() {
-            return (IVsDebugger)GetGlobalService(typeof(SVsShellDebugger));
         }
 
         protected override void OnLoadOptions(string key, Stream stream) {
