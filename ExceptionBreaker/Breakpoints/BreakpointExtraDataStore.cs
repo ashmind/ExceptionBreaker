@@ -14,12 +14,15 @@ using Newtonsoft.Json.Converters;
 namespace ExceptionBreaker.Breakpoints {
     [Export]
     public class BreakpointExtraDataStore : ISolutionDataPersister {
+        private static readonly BreakpointExtraData EmptyData = new BreakpointExtraData();
+
+        public event EventHandler DataLoaded = delegate { };
+        public event EventHandler<BreakpointExtraDataChangedEventArgs> DataChanged = delegate { };
+        
         private readonly BreakpointKeyProvider _keyProvider;
         private readonly JsonSerializer _jsonSerializer;
         private readonly IDiagnosticLogger _logger;
         private readonly ConcurrentDictionary<string, BreakpointExtraData> _store = new ConcurrentDictionary<string, BreakpointExtraData>(StringComparer.InvariantCultureIgnoreCase);
-
-        public event EventHandler<BreakpointExtraDataChangedEventArgs> DataChanged = delegate {};
 
         [ImportingConstructor]
         public BreakpointExtraDataStore(
@@ -41,8 +44,10 @@ namespace ExceptionBreaker.Breakpoints {
                 foreach (Breakpoint2 old in e.OldItems) {
                     BreakpointExtraData data;
                     var removed = _store.TryRemove(_keyProvider.GetKey(old), out data);
-                    if (removed)
-                        DataChanged(this, new BreakpointExtraDataChangedEventArgs(old));
+                    if (removed) {
+                        data.ExceptionBreakChange = ExceptionBreakChange.NoChange;
+                        DataChanged(this, new BreakpointExtraDataChangedEventArgs(old, data));
+                    }
                 }
             };
         }
@@ -67,7 +72,11 @@ namespace ExceptionBreaker.Breakpoints {
         }
 
         public void NotifyDataChanged([NotNull] Breakpoint2 breakpoint) {
-            DataChanged(this, new BreakpointExtraDataChangedEventArgs(breakpoint));
+            DataChanged(this, new BreakpointExtraDataChangedEventArgs(breakpoint, GetData(breakpoint)));
+        }
+
+        public IEnumerable<BreakpointExtraData> GetAllCurrentData() {
+            return _store.Values;
         }
 
         string ISolutionDataPersister.Key {
@@ -94,6 +103,8 @@ namespace ExceptionBreaker.Breakpoints {
                     _logger.WriteLine("  Loaded '{0}': change = {1}.", pair.Key, pair.Value.ExceptionBreakChange);
                 }
             }
+
+            DataLoaded(this, EventArgs.Empty);
         }
 
         #region BreakpointExtraDataSerialized Class
@@ -104,12 +115,12 @@ namespace ExceptionBreaker.Breakpoints {
 
             public BreakpointExtraDataSerializable(BreakpointExtraData data) {
                 Version = 1;
-                ExceptionBreakChange = data.ExceptionBreakChange.Value;
+                ExceptionBreakChange = data.ExceptionBreakChange;
             }
 
             public BreakpointExtraData ToData() {
                 return new BreakpointExtraData {
-                    ExceptionBreakChange = {Value = ExceptionBreakChange}
+                    ExceptionBreakChange = ExceptionBreakChange
                 };
             }
 

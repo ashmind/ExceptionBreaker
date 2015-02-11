@@ -12,6 +12,8 @@ namespace ExceptionBreaker.Breakpoints {
         private readonly BreakpointExtraDataStore _extraDataStore;
         private readonly ExceptionBreakManager _breakManager;
         private readonly IDiagnosticLogger _logger;
+        private readonly ISet<BreakpointExtraData> _actionableExtraData = new HashSet<BreakpointExtraData>();
+        private bool _eventsAdvised;
 
         public BreakpointHitHandler(IVsDebugger debugger, BreakpointExtraDataStore extraDataStore, ExceptionBreakManager breakManager, IDiagnosticLogger logger) {
             _debugger = debugger;
@@ -19,7 +21,49 @@ namespace ExceptionBreaker.Breakpoints {
             _breakManager = breakManager;
             _logger = logger;
 
-            debugger.AdviseDebugEventCallback(this);
+            // Optimization: I expect that most ppl would not use breakpoints feature,
+            // so here we ignore events unless there are actual breakpoints
+            ClassifyAllExtraData();
+            UpdateEventSubscription();
+
+            _extraDataStore.DataLoaded += (sender, e) => {
+                ClassifyAllExtraData();
+                UpdateEventSubscription();
+            };
+            _extraDataStore.DataChanged += (sender, e) => {
+                if (e.Data.ExceptionBreakChange != ExceptionBreakChange.NoChange) {
+                    _actionableExtraData.Add(e.Data);
+                }
+                else {
+                    _actionableExtraData.Remove(e.Data);
+                }
+                UpdateEventSubscription();
+            };
+        }
+
+        private void ClassifyAllExtraData() {
+            _actionableExtraData.Clear();
+            foreach (var data in _extraDataStore.GetAllCurrentData()) {
+                if (data.ExceptionBreakChange != ExceptionBreakChange.NoChange)
+                    _actionableExtraData.Add(data);
+            }
+        }
+
+        private void UpdateEventSubscription() {
+            if (_actionableExtraData.Count > 0) {
+                if (!_eventsAdvised) {
+                    _logger.WriteLine("Found actionable breakpoints, activating breakpoint events.");
+                    _debugger.AdviseDebugEventCallback(this);
+                    _eventsAdvised = true;
+                }
+            }
+            else {
+                if (_eventsAdvised) {
+                    _logger.WriteLine("No actionable breakpoints, deactivating breakpoint events.");
+                    _debugger.UnadviseDebugEventCallback(this);
+                    _eventsAdvised = false;
+                }
+            }
         }
 
         public int Event(IDebugEngine2 pEngine, IDebugProcess2 pProcess, IDebugProgram2 pProgram, IDebugThread2 pThread, IDebugEvent2 pEvent, ref Guid riidEvent, uint dwAttrib) {
@@ -44,13 +88,12 @@ namespace ExceptionBreaker.Breakpoints {
             if (breakpointEvent == null)
                 return;
 
-            _logger.WriteLine("Event: Breakpoint reached.");
             foreach (var breakpoint in breakpointEvent.GetBreakpointsAsArraySafe()) {
                 var extraData = _extraDataStore.GetData(breakpoint);
                 if (extraData == null)
                     continue;
 
-                var change = extraData.ExceptionBreakChange.Value;
+                var change = extraData.ExceptionBreakChange;
                 if (change == ExceptionBreakChange.NoChange)
                     continue;
 
@@ -62,7 +105,8 @@ namespace ExceptionBreaker.Breakpoints {
         }
 
         public void Dispose() {
-            _debugger.UnadviseDebugEventCallback(this);
+            if (_eventsAdvised)
+                _debugger.UnadviseDebugEventCallback(this);
         }
     }
 }

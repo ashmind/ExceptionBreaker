@@ -32,7 +32,7 @@ namespace ExceptionBreaker.Breakpoints {
 
                 var extraData = _extraDataStore.GetData(breakpoint);
 
-                var @checked = extraData.ExceptionBreakChange.Value != ExceptionBreakChange.NoChange;
+                var @checked = extraData.ExceptionBreakChange != ExceptionBreakChange.NoChange;
                 if (@checked == _command.Checked)
                     return;
 
@@ -61,8 +61,8 @@ namespace ExceptionBreaker.Breakpoints {
             var extraData = _extraDataStore.GetData(breakpoint);
             var dialog = new BreakpointExceptionsDialog {
                 ViewModel = new BreakpointExceptionsViewModel {
-                    ShouldChange = { Value = extraData.ExceptionBreakChange.Value != ExceptionBreakChange.NoChange },
-                    Change = extraData.ExceptionBreakChange.Value,
+                    ShouldChange = { Value = extraData.ExceptionBreakChange != ExceptionBreakChange.NoChange },
+                    Change = extraData.ExceptionBreakChange,
                     ContinueExecution = !breakpoint.BreakWhenHit
                 }
             };
@@ -74,7 +74,7 @@ namespace ExceptionBreaker.Breakpoints {
 
             var change = dialog.ViewModel.ShouldChange.Value ? dialog.ViewModel.Change : ExceptionBreakChange.NoChange;
             _logger.WriteLine("Updating breakpoint settings: continue execution = {0}, change = {1}.", dialog.ViewModel.ContinueExecution, change);
-            extraData.ExceptionBreakChange.Value = change;
+            extraData.ExceptionBreakChange = change;
 
             SetBreakWhenHit(breakpoint, !dialog.ViewModel.ContinueExecution);
             _extraDataStore.NotifyDataChanged(breakpoint);

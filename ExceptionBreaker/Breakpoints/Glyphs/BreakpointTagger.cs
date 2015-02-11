@@ -28,7 +28,7 @@ namespace ExceptionBreaker.Breakpoints.Glyphs {
                     continue;
 
                 var extraData = _extraDataStore.GetData(breakpoint);
-                if (extraData.ExceptionBreakChange.Value == ExceptionBreakChange.NoChange)
+                if (extraData.ExceptionBreakChange == ExceptionBreakChange.NoChange)
                     continue;
 
                 yield return new TagSpan<BreakpointTag>(new SnapshotSpan(span.Start, span.Length), new BreakpointTag(extraData));

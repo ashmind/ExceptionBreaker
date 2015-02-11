@@ -79,6 +79,7 @@ namespace ExceptionBreaker {
 
         private void SetupCoreManager() {
             var debugger = Mef.GetExportedValue<IDebuggerInternalAdapter>();
+            // TODO: MEF
             var sessionManager = new DebugSessionManager(debugger, Logger);
             var optionsPage = new Lazy<OptionsPageData>(() => (OptionsPageData)GetDialogPage(typeof (OptionsPageData)));
             ExceptionBreakManager = new ExceptionBreakManager(
@@ -89,6 +90,7 @@ namespace ExceptionBreaker {
         }
 
         private void SetupToolbar() {
+            // TODO: MEF
             var menuCommandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             var monitorSelection = (IVsMonitorSelection)GetService(typeof(IVsMonitorSelection));
             _toolbarController = new ToggleBreakOnAllController(
@@ -108,6 +110,7 @@ namespace ExceptionBreaker {
             var extraDataStore = Mef.GetExportedValue<BreakpointExtraDataStore>();
             _solutionDataPersisters.Add(extraDataStore);
 
+            // TODO: MEF
             _breakpointHitHandler = new BreakpointHitHandler(debugger, extraDataStore, ExceptionBreakManager, Logger);
             _breakpointController = new BreakpointExceptionsController(
                 new CommandInitializer(CommandIDs.BreakpointToggleExceptions, menuCommandService),

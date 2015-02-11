@@ -39,7 +39,7 @@ namespace ExceptionBreaker.Breakpoints.Glyphs {
                 return null;
 
             return new Image {
-                Source = _images[breakpointTag.BreakpointExtraData.ExceptionBreakChange.Value].Value,
+                Source = _images[breakpointTag.BreakpointExtraData.ExceptionBreakChange].Value,
                 Margin = new Thickness {
                     Left = _breakpointGlyphSize - OverlayGlyphSize,
                     Top = _breakpointGlyphSize - OverlayGlyphSize
