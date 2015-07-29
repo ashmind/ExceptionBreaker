@@ -172,6 +172,7 @@
     <Compile Include="Implementation\VersionSpecific\DebuggerInternal11Adapter.cs" />
     <Compile Include="Implementation\VersionSpecific\IDebuggerInternalAdapter.cs" />
     <Compile Include="Implementation\VersionSpecific\VersionSpecificAdapterFactory.cs" />
+    <Compile Include="Implementation\VSInteropHelper.cs" />
     <Compile Include="Options\ExceptionViewModel.cs" />
     <Compile Include="Options\PatternData.cs" />
     <Compile Include="Options\RegexValidationRule.cs" />

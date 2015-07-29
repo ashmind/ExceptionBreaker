@@ -62,7 +62,7 @@ namespace ExceptionBreaker
         {
             Trace.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this));
             base.Initialize();
-            Logger = new ExtensionLogger("ExceptionBreaker", paneCaption => GetOutputPane(GuidList.OutputPane, paneCaption));
+            Logger = new ExtensionLogger("ExceptionBreaker", this, GuidList.OutputPane);
 
             _dte = (DTE)GetService(typeof(DTE));
             SetupExceptionBreakManager();
